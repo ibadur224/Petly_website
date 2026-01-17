@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Behavior Assistant | Pet Wellness</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #ff8c42;
+            --accent-color: #6bbf59;
+            --transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cherry Bomb One', cursive;
+        }
+        
+        body {
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Video Background */
+        #video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+        
+        /* Subtle overlay */
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+            z-index: -1;
+        }
+        
+        /* Content wrapper */
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            font-weight: 300;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn-primary {
+            background: rgba(255, 140, 66, 0.3);
+            border-color: rgba(255, 140, 66, 0.5);
+        }
+        
+        .nav-btn-primary:hover {
+            background: rgba(255, 140, 66, 0.4);
+        }
+        
+        /* Main content layout - TWO COLUMNS SIDE BY SIDE */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+        
+        /* Section Cards */
+        .section-card {
+            position: relative;
+            padding: 2rem;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            opacity: 0;
+            transform-origin: center;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Card animations */
+        .section-card:nth-child(1) {
+            transform: translateX(-100px);
+            animation: slideInLeft 1s 0.5s ease forwards;
+        }
+        
+        .section-card:nth-child(2) {
+            transform: translateX(100px);
+            animation: slideInRight 1s 0.7s ease forwards;
+        }
+        
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Section header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-icon {
+            font-size: 2.2rem;
+            color: #ff8c42;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 400;
+        }
+        
+        /* Form elements */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            font-size: 1rem;
+        }
+        
+        select, textarea, input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1rem;
+            font-weight: 300;
+            transition: var(--transition);
+        }
+        
+        select:focus, textarea:focus, input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        option {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        
+        /* Pet type selector */
+        .pet-type-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .pet-type-btn {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .pet-type-btn i {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .pet-type-btn.active {
+            background: rgba(255, 140, 66, 0.3);
+            border-color: rgba(255, 140, 66, 0.5);
+        }
+        
+        .pet-type-btn.active i {
+            color: #ff8c42;
+        }
+        
+        /* Checkbox group */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .checkbox-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .checkbox-item input {
+            width: auto;
+        }
+        
+        /* Behavior items */
+        .behavior-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .behavior-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .behavior-icon {
+            font-size: 1.8rem;
+            color: #ff8c42;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 140, 66, 0.1);
+            border-radius: 10px;
+        }
+        
+        .behavior-content {
+            flex: 1;
+        }
+        
+        .behavior-title {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 0.3rem;
+        }
+        
+        .behavior-desc {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+        }
+        
+        /* Buttons */
+        .action-btn {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 10px;
+            background: rgba(255, 140, 66, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 140, 66, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 140, 66, 0.3);
+        }
+        
+        .action-btn:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 0.5rem;
+        }
+        
+        .secondary-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Results area */
+        .result-area {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1;
+            overflow-y: auto;
+            max-height: 300px;
+            display: none;
+        }
+        
+        .result-area.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.2rem;
+        }
+        
+        .result-content {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            line-height: 1.7;
+        }
+        
+        /* Log list */
+        .log-list {
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-item {
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            border-left: 3px solid #ff8c42;
+            position: relative;
+        }
+        
+        .log-date {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.3rem;
+        }
+        
+        .log-text {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.9);
+            padding-right: 60px;
+        }
+        
+        /* Log action buttons */
+        .log-actions {
+            position: absolute;
+            top: 0.8rem;
+            right: 0.8rem;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .log-action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 0.8rem;
+        }
+        
+        .log-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .log-action-btn.delete:hover {
+            background: rgba(231, 76, 60, 0.8);
+        }
+        
+        .log-action-btn.edit:hover {
+            background: rgba(52, 152, 219, 0.8);
+        }
+        
+        /* Loading animation */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            display: none;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #ff8c42;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            background: rgba(107, 191, 89, 0.9);
+            color: white;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 300px;
+        }
+        
+        .notification.hidden {
+            animation: slideOutRight 0.5s ease forwards;
+        }
+        
+        @keyframes slideOutRight {
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        /* Home Icon at bottom */
+        .home-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+        
+        .home-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(8px);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: var(--transition);
+            opacity: 0;
+            animation: fadeIn 1s 2s ease forwards;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .home-link:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.1) rotate(360deg);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Transparent Scrollbar Styling */
+        .result-area::-webkit-scrollbar,
+        .log-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .result-area::-webkit-scrollbar-track,
+        .log-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .result-area::-webkit-scrollbar-thumb,
+        .log-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .result-area::-webkit-scrollbar-thumb:hover,
+        .log-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* For Firefox */
+        .result-area,
+        .log-list {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 1.5rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .logo {
+                font-size: 1.8rem;
+            }
+            
+            .section-card {
+                padding: 1.5rem;
+                min-height: 500px;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .home-link {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+            
+            .log-actions {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 0.5rem;
+                justify-content: flex-end;
+            }
+            
+            .log-text {
+                padding-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <video autoplay muted loop playsinline id="video-background">
+        <source src="../resourses/well_vid.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+    
+    <!-- Subtle overlay -->
+    <div class="video-overlay"></div>
+    
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-brain"></i> Behavior Assistant
+            </div>
+            <div class="nav-buttons">
+                <a href="tech_tools_hub.html" class="nav-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Hub
+                </a>
+                <a href="wellness.html" class="nav-btn nav-btn-primary">
+                    <i class="fas fa-heartbeat"></i> Wellness
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content - TWO COLUMNS -->
+        <div class="main-content">
+            <!-- LEFT COLUMN: Behavior Analysis -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h2 class="section-title">Behavior Analysis</h2>
+                </div>
+                
+                <div class="pet-type-selector">
+                    <div class="pet-type-btn active" data-pet="dog">
+                        <i class="fas fa-dog"></i>
+                        <span>Dog</span>
+                    </div>
+                    <div class="pet-type-btn" data-pet="cat">
+                        <i class="fas fa-cat"></i>
+                        <span>Cat</span>
+                    </div>
+                    <div class="pet-type-btn" data-pet="other">
+                        <i class="fas fa-dove"></i>
+                        <span>Other</span>
+                    </div>
+                </div>
+                
+                <form id="behaviorForm">
+                    <div class="form-group">
+                        <label for="petName">Pet's Name</label>
+                        <input type="text" id="petName" placeholder="Enter your pet's name...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="petAge">Pet's Age</label>
+                        <select id="petAge">
+                            <option value="">Select age range</option>
+                            <option value="puppy_kitten">Puppy/Kitten (0-1 year)</option>
+                            <option value="young">Young (1-3 years)</option>
+                            <option value="adult">Adult (3-8 years)</option>
+                            <option value="senior">Senior (8+ years)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Observed Behaviors (Select all that apply)</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="barking" value="excessive barking">
+                                <label for="barking">Excessive barking</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="chewing" value="destructive chewing">
+                                <label for="chewing">Destructive chewing</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="anxiety" value="separation anxiety">
+                                <label for="anxiety">Separation anxiety</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="aggression" value="aggression">
+                                <label for="aggression">Aggression</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="jumping" value="jumping on people">
+                                <label for="jumping">Jumping on people</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="scratching" value="furniture scratching">
+                                <label for="scratching">Furniture scratching</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="behaviorDescription">Describe the Behavior in Detail</label>
+                        <textarea id="behaviorDescription" placeholder="When did it start? What happens before/during/after? How often does it occur? Any triggers you've noticed?"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="action-btn" id="analyzeBtn">
+                        <i class="fas fa-robot"></i> Analyze with AI
+                    </button>
+                </form>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>AI is analyzing behavior patterns...</p>
+                </div>
+                
+                <div class="result-area" id="resultArea">
+                    <div class="result-header">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3>AI Recommendations</h3>
+                    </div>
+                    <div class="result-content" id="resultContent">
+                        <!-- AI results will appear here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- RIGHT COLUMN: Common Behavior Issues -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h2 class="section-title">Common Behavior Issues</h2>
+                </div>
+                
+                <p style="margin-bottom: 1.5rem; color: rgba(255,255,255,0.9);">Click on any behavior to learn more and add it to your analysis:</p>
+                
+                <div class="behavior-list">
+                    <div class="behavior-item" data-behavior="barking">
+                        <div class="behavior-icon">
+                            <i class="fas fa-volume-up"></i>
+                        </div>
+                        <div class="behavior-content">
+                            <div class="behavior-title">Excessive Barking</div>
+                            <div class="behavior-desc">Dogs bark for many reasons: alert, boredom, anxiety, or attention-seeking.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="behavior-item" data-behavior="chewing">
+                        <div class="behavior-icon">
+                            <i class="fas fa-teeth"></i>
+                        </div>
+                        <div class="behavior-content">
+                            <div class="behavior-title">Destructive Chewing</div>
+                            <div class="behavior-desc">Common in puppies and bored dogs. Can damage furniture and belongings.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="behavior-item" data-behavior="anxiety">
+                        <div class="behavior-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="behavior-content">
+                            <div class="behavior-title">Separation Anxiety</div>
+                            <div class="behavior-desc">Pets become distressed when left alone, leading to destructive behavior.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="behavior-item" data-behavior="litter">
+                        <div class="behavior-icon">
+                            <i class="fas fa-toilet"></i>
+                        </div>
+                        <div class="behavior-content">
+                            <div class="behavior-title">Litter Box Issues</div>
+                            <div class="behavior-desc">Cats may avoid the litter box due to medical issues or preferences.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 2rem;">
+                    <label for="logEntry">Log Behavior Incident</label>
+                    <textarea id="logEntry" placeholder="Date, time, what happened, triggers, etc."></textarea>
+                </div>
+                
+                <button class="action-btn secondary-btn" id="logBtn">
+                    <i class="fas fa-save"></i> Add to Behavior Log
+                </button>
+                
+                <div class="result-area active" style="margin-top: 1.5rem;">
+                    <div class="result-header">
+                        <i class="fas fa-history"></i>
+                        <h3>Behavior Log</h3>
+                    </div>
+                    <div class="log-list" id="logList">
+                        <!-- Logs will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Icon at Bottom -->
+    <div class="home-icon">
+        <a href="../index.html" class="home-link" title="Home">
+            <i class="fas fa-home"></i>
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('video-background');
+            const behaviorForm = document.getElementById('behaviorForm');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const loadingElement = document.getElementById('loading');
+            const resultArea = document.getElementById('resultArea');
+            const resultContent = document.getElementById('resultContent');
+            const petTypeButtons = document.querySelectorAll('.pet-type-btn');
+            const logBtn = document.getElementById('logBtn');
+            const logEntry = document.getElementById('logEntry');
+            const logList = document.getElementById('logList');
+            const behaviorItems = document.querySelectorAll('.behavior-item');
+            
+            // Current pet type (default: dog)
+            let currentPetType = 'dog';
+            
+            // Behavior logs array
+            let behaviorLogs = JSON.parse(localStorage.getItem('petBehaviorLogs')) || [];
+            
+            // Ensure video plays
+            if (video) {
+                video.play().catch(function(error) {
+                    console.log("Video autoplay failed:", error);
+                });
+            }
+            
+            // Initialize
+            displayLogs();
+            
+            // Set up pet type selection
+            petTypeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    petTypeButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentPetType = this.getAttribute('data-pet');
+                });
+            });
+            
+            // Set up behavior item clicks
+            behaviorItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const behavior = this.getAttribute('data-behavior');
+                    loadBehaviorIntoForm(behavior);
+                    
+                    // Visual feedback
+                    this.style.background = 'rgba(255, 140, 66, 0.2)';
+                    setTimeout(() => {
+                        this.style.background = '';
+                    }, 500);
+                });
+            });
+            
+            // Set up form submission
+            behaviorForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await analyzeBehaviorWithAI();
+            });
+            
+            // Set up log button
+            logBtn.addEventListener('click', addBehaviorLog);
+            
+            // Function to analyze behavior with AI
+            async function analyzeBehaviorWithAI() {
+                // Get form data
+                const petName = document.getElementById('petName').value || 'your pet';
+                const petAge = document.getElementById('petAge').value;
+                const behaviorDescription = document.getElementById('behaviorDescription').value;
+                
+                // Get selected behaviors
+                const selectedBehaviors = [];
+                document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                    selectedBehaviors.push(checkbox.value);
+                });
+                
+                // Validate form
+                if (selectedBehaviors.length === 0 && !behaviorDescription.trim()) {
+                    showNotification('Please select at least one behavior or describe the behavior in detail.', 'error');
+                    return;
+                }
+                
+                // Show loading state
+                analyzeBtn.disabled = true;
+                loadingElement.style.display = 'block';
+                resultArea.classList.remove('active');
+                
+                try {
+                    // Try to load API config
+                    let apiConfig = {
+                        model: "mistralai/devstral-2512:free",
+                        API_ENDPOINT: "https://api.openai.com/v1/chat/completions"
+                    };
+                    
+                    // Try to load from api_well.json
+                    try {
+                        const response = await fetch('api_well.json');
+                        if (response.ok) {
+                            const config = await response.json();
+                            apiConfig = config;
+                        }
+                    } catch (error) {
+                        console.log('Using default API config');
+                    }
+                    
+                    // Prepare the prompt for AI
+                    const prompt = `As a pet behavior expert, provide practical advice for a ${currentPetType} named ${petName}${petAge ? ` (${getAgeText(petAge)})` : ''}. 
+                    
+                    Observed behaviors: ${selectedBehaviors.length > 0 ? selectedBehaviors.join(', ') : 'No specific behaviors selected'}
+                    
+                    Description: ${behaviorDescription || 'No additional details provided'}
+                    
+                    Please provide:
+                    1. Potential causes for these behaviors
+                    2. Practical solutions and training tips
+                    3. When to seek professional help
+                    4. Environmental adjustments that might help
+                    
+                    Keep the response concise, practical, and pet-owner friendly.`;
+                    
+                    // Show that we're using AI
+                    resultContent.innerHTML = `<p><i class="fas fa-robot"></i> Using AI model: ${apiConfig.model}</p>`;
+                    resultArea.classList.add('active');
+                    
+                    // Try to call the actual API if we have a key
+                    if (apiConfig.API_KEY && apiConfig.API_KEY !== "here my api key") {
+                        // Actual API call
+                        const response = await fetch(apiConfig.API_ENDPOINT, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${apiConfig.API_KEY}`
+                            },
+                            body: JSON.stringify({
+                                model: apiConfig.model,
+                                messages: [
+                                    {
+                                        role: "system",
+                                        content: "You are a certified pet behavior expert with 20 years of experience. Provide practical, evidence-based advice for pet owners. Always emphasize safety and recommend professional consultation when appropriate."
+                                    },
+                                    {
+                                        role: "user",
+                                        content: prompt
+                                    }
+                                ],
+                                temperature: 0.7,
+                                max_tokens: 800
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`API error: ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
+                        const aiResponse = data.choices[0].message.content;
+                        displayAIResults(petName, aiResponse);
+                        
+                    } else {
+                        // Fallback to simulated AI response
+                        setTimeout(() => {
+                            const simulatedResponse = generateSimulatedAIResponse(
+                                petName, 
+                                currentPetType, 
+                                petAge, 
+                                selectedBehaviors, 
+                                behaviorDescription
+                            );
+                            displayAIResults(petName, simulatedResponse);
+                        }, 1500);
+                    }
+                    
+                } catch (error) {
+                    console.error('AI Analysis Error:', error);
+                    // Fallback to simulated response
+                    setTimeout(() => {
+                        const simulatedResponse = generateSimulatedAIResponse(
+                            document.getElementById('petName').value || 'your pet', 
+                            currentPetType, 
+                            document.getElementById('petAge').value,
+                            selectedBehaviors, 
+                            behaviorDescription
+                        );
+                        displayAIResults(petName, simulatedResponse);
+                        showNotification('Using simulated AI response (API not configured)', 'warning');
+                    }, 1500);
+                } finally {
+                    // Hide loading state
+                    analyzeBtn.disabled = false;
+                    loadingElement.style.display = 'none';
+                }
+            }
+            
+            // Function to generate simulated AI response
+            function generateSimulatedAIResponse(petName, petType, petAge, behaviors, description) {
+                let response = `<div class="ai-response">`;
+                response += `<h4 style="color: #ff8c42; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">Behavior Analysis for ${petName}</h4>`;
+                
+                response += `<div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(255,255,255,0.05); border-radius: 8px;">`;
+                response += `<strong>Pet Details:</strong> ${petType}${petAge ? `, ${getAgeText(petAge)}` : ''}`;
+                response += `</div>`;
+                
+                if (behaviors.length > 0) {
+                    response += `<h5 style="color: rgba(255,255,255,0.9); margin: 1rem 0 0.5rem 0;">Identified Behaviors</h5>`;
+                    behaviors.forEach(behavior => {
+                        response += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px; border-left: 3px solid #ff8c42;">`;
+                        response += `<strong>${behavior}:</strong> ${getBehaviorTip(behavior, petType)}`;
+                        response += `</div>`;
+                    });
+                }
+                
+                response += `<h5 style="color: rgba(255,255,255,0.9); margin: 1.5rem 0 0.5rem 0;">AI Recommendations</h5>`;
+                
+                // General advice based on pet type
+                if (petType === 'dog') {
+                    response += `<div style="margin-bottom: 1rem;">`;
+                    response += `<strong style="color: #ff8c42;">For Dogs:</strong>`;
+                    response += `<ul style="margin: 0.5rem 0 0.5rem 1rem;">`;
+                    response += `<li>Consistent Routine: Dogs thrive on predictability. Establish regular feeding, walking, and play times.</li>`;
+                    response += `<li>Positive Reinforcement: Reward desired behaviors immediately with treats or praise.</li>`;
+                    response += `<li>Adequate Exercise: Most behavioral issues improve with sufficient physical activity.</li>`;
+                    response += `<li>Mental Stimulation: Puzzle toys and training sessions prevent boredom.</li>`;
+                    response += `</ul>`;
+                    response += `</div>`;
+                } else if (petType === 'cat') {
+                    response += `<div style="margin-bottom: 1rem;">`;
+                    response += `<strong style="color: #ff8c42;">For Cats:</strong>`;
+                    response += `<ul style="margin: 0.5rem 0 0.5rem 1rem;">`;
+                    response += `<li>Environmental Enrichment: Provide vertical space, hiding spots, and scratching posts.</li>`;
+                    response += `<li>Routine: Cats appreciate consistency in feeding and play schedules.</li>`;
+                    response += `<li>Positive Associations: Use treats and praise to reinforce good behavior.</li>`;
+                    response += `<li>Multiple Resources: In multi-cat homes, provide separate food bowls and litter boxes.</li>`;
+                    response += `</ul>`;
+                    response += `</div>`;
+                }
+                
+                // Behavior-specific advice
+                if (behaviors.includes('separation anxiety')) {
+                    response += `<div style="margin-bottom: 1rem;">`;
+                    response += `<strong style="color: #ff8c42;">For Separation Anxiety:</strong>`;
+                    response += `<ul style="margin: 0.5rem 0 0.5rem 1rem;">`;
+                    response += `<li>Practice short departures (5-30 minutes) and gradually increase time</li>`;
+                    response += `<li>Create positive associations with your departure (special toys/treats)</li>`;
+                    response += `<li>Avoid emotional goodbyes and hellos</li>`;
+                    response += `<li>Consider calming supplements or pheromone diffusers</li>`;
+                    response += `</ul>`;
+                    response += `</div>`;
+                }
+                
+                if (behaviors.includes('aggression')) {
+                    response += `<div style="margin-bottom: 1rem;">`;
+                    response += `<strong style="color: #ff8c42;">For Aggression:</strong>`;
+                    response += `<ul style="margin: 0.5rem 0 0.5rem 1rem;">`;
+                    response += `<li>Identify and avoid triggers when possible</li>`;
+                    response += `<li>Never punish aggressive displays (can increase fear)</li>`;
+                    response += `<li>Consult a professional behaviorist for safety</li>`;
+                    response += `<li>Rule out medical causes with a veterinarian</li>`;
+                    response += `</ul>`;
+                    response += `</div>`;
+                }
+                
+                response += `<h5 style="color: rgba(255,255,255,0.9); margin: 1.5rem 0 0.5rem 0;">When to Seek Professional Help</h5>`;
+                response += `<div style="padding: 0.8rem; background: rgba(255,140,66,0.1); border-radius: 8px; border-left: 3px solid #ff8c42;">`;
+                response += `Consult a veterinarian or certified behaviorist if:`;
+                response += `<ul style="margin: 0.5rem 0 0 1rem;">`;
+                response += `<li>Behaviors are dangerous or escalating</li>`;
+                response += `<li>There's any risk of injury to people or other animals</li>`;
+                response += `<li>Behaviors don't improve after 2-3 weeks of consistent training</li>`;
+                response += `<li>You suspect underlying medical issues</li>`;
+                response += `</ul>`;
+                response += `</div>`;
+                
+                response += `<div style="margin-top: 1rem; padding: 0.8rem; background: rgba(255,255,255,0.1); border-radius: 8px; font-size: 0.9rem; color: rgba(255,255,255,0.8);">`;
+                response += `<strong>Note:</strong> This AI-generated advice is for informational purposes only. Always consult with professionals for serious behavioral concerns.`;
+                response += `</div>`;
+                
+                response += `</div>`;
+                
+                return response;
+            }
+            
+            // Function to display AI results - FIXED FORMATTING
+            function displayAIResults(petName, aiResponse) {
+                // Clean the AI response - remove markdown symbols
+                let formattedResponse = aiResponse;
+                
+                // Replace markdown headers with styled divs
+                formattedResponse = formattedResponse.replace(/#{1,6}\s+(.*?)(?=\n|$)/g, '<h4 style="color: #ff8c42; margin: 1.5rem 0 0.8rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">$1</h4>');
+                
+                // Replace bold markdown with strong tags
+                formattedResponse = formattedResponse.replace(/\*\*(.*?)\*\*/g, '<strong style="color: rgba(255,255,255,0.95);">$1</strong>');
+                
+                // Replace asterisk lists with proper HTML lists
+                formattedResponse = formattedResponse.replace(/\*\s+(.*?)(?=\n|$)/g, '<li>$1</li>');
+                
+                // Convert line breaks to br tags
+                formattedResponse = formattedResponse.replace(/\n/g, '<br>');
+                
+                // Wrap lists in ul tags
+                formattedResponse = formattedResponse.replace(/(<li>.*?<\/li>(?:<br>)?)+/g, function(match) {
+                    return '<ul style="margin: 0.5rem 0 1rem 1.5rem; color: rgba(255,255,255,0.9);">' + match.replace(/<br>/g, '') + '</ul>';
+                });
+                
+                // Remove any remaining markdown symbols
+                formattedResponse = formattedResponse.replace(/\*/g, '•');
+                
+                // Wrap in container
+                resultContent.innerHTML = `<div class="ai-response" style="color: rgba(255,255,255,0.9);">${formattedResponse}</div>`;
+                resultArea.classList.add('active');
+                
+                // Scroll to results
+                resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Show success notification
+                showNotification(`AI analysis complete for ${petName}!`, 'success');
+            }
+            
+            // Helper function to get age text
+            function getAgeText(ageValue) {
+                const ageMap = {
+                    'puppy_kitten': 'Puppy/Kitten (0-1 year)',
+                    'young': 'Young (1-3 years)',
+                    'adult': 'Adult (3-8 years)',
+                    'senior': 'Senior (8+ years)'
+                };
+                return ageMap[ageValue] || ageValue;
+            }
+            
+            // Helper function to get behavior-specific tips
+            function getBehaviorTip(behavior, petType) {
+                const tips = {
+                    'excessive barking': 'Identify triggers, provide exercise, teach "quiet" command',
+                    'destructive chewing': 'Provide appropriate toys, use deterrents, ensure exercise',
+                    'separation anxiety': 'Practice short departures, create positive associations',
+                    'aggression': 'Identify triggers, consult professional, use positive reinforcement',
+                    'jumping on people': 'Ignore jumping, reward four-on-floor, teach "sit" for greeting',
+                    'furniture scratching': 'Provide scratching posts, use deterrents, trim nails regularly'
+                };
+                
+                return tips[behavior] || 'Monitor patterns, consider professional consultation';
+            }
+            
+            // Function to load behavior into form
+            function loadBehaviorIntoForm(behavior) {
+                const behaviorTitles = {
+                    'barking': 'Excessive Barking',
+                    'chewing': 'Destructive Chewing',
+                    'anxiety': 'Separation Anxiety',
+                    'litter': 'Litter Box Issues'
+                };
+                
+                // Check the corresponding checkbox if it exists
+                const checkbox = document.getElementById(behavior);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+                
+                // Add to behavior description
+                const textarea = document.getElementById('behaviorDescription');
+                const behaviorTitle = behaviorTitles[behavior] || behavior;
+                
+                if (!textarea.value.includes(behaviorTitle)) {
+                    if (textarea.value) {
+                        textarea.value += `\n• ${behaviorTitle}`;
+                    } else {
+                        textarea.value = `• ${behaviorTitle}`;
+                    }
+                }
+                
+                showNotification(`${behaviorTitle} added to analysis`, 'info');
+            }
+            
+            // Function to add a behavior log
+            function addBehaviorLog() {
+                const logText = logEntry.value.trim();
+                if (!logText) {
+                    showNotification('Please enter a log entry', 'error');
+                    return;
+                }
+                
+                const timestamp = new Date().toLocaleString();
+                const logItem = {
+                    id: Date.now(),
+                    date: timestamp,
+                    text: logText,
+                    petType: currentPetType
+                };
+                
+                behaviorLogs.unshift(logItem);
+                localStorage.setItem('petBehaviorLogs', JSON.stringify(behaviorLogs));
+                
+                displayLogs();
+                logEntry.value = '';
+                
+                showNotification('Behavior log added!', 'success');
+            }
+            
+            // Function to delete a log
+            function deleteLog(logId) {
+                if (confirm('Are you sure you want to delete this log entry?')) {
+                    behaviorLogs = behaviorLogs.filter(log => log.id !== logId);
+                    localStorage.setItem('petBehaviorLogs', JSON.stringify(behaviorLogs));
+                    displayLogs();
+                    showNotification('Log entry deleted', 'success');
+                }
+            }
+            
+            // Function to edit a log
+            function editLog(logId) {
+                const logToEdit = behaviorLogs.find(log => log.id === logId);
+                if (logToEdit) {
+                    logEntry.value = logToEdit.text;
+                    
+                    // Remove the log being edited
+                    behaviorLogs = behaviorLogs.filter(log => log.id !== logId);
+                    localStorage.setItem('petBehaviorLogs', JSON.stringify(behaviorLogs));
+                    displayLogs();
+                    
+                    showNotification('Log loaded for editing. Modify and click "Add to Behavior Log" to save.', 'info');
+                    
+                    // Scroll to log entry field
+                    logEntry.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    logEntry.focus();
+                }
+            }
+            
+            // Function to display logs
+            function displayLogs() {
+                if (behaviorLogs.length === 0) {
+                    logList.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.6); font-style: italic; padding: 1rem;">No behavior logs yet. Start tracking to identify patterns.</p>';
+                    return;
+                }
+                
+                let logsHTML = '';
+                
+                behaviorLogs.slice(0, 5).forEach(log => {
+                    logsHTML += `
+                        <div class="log-item" data-id="${log.id}">
+                            <div class="log-date">${log.date} (${log.petType})</div>
+                            <div class="log-text">${log.text}</div>
+                            <div class="log-actions">
+                                <button class="log-action-btn edit" title="Edit Log" onclick="editLog(${log.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="log-action-btn delete" title="Delete Log" onclick="deleteLog(${log.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                if (behaviorLogs.length > 5) {
+                    logsHTML += `<p style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.9rem;">... ${behaviorLogs.length - 5} more logs</p>`;
+                }
+                
+                logList.innerHTML = logsHTML;
+            }
+            
+            // Function to show notifications
+            function showNotification(message, type = 'info') {
+                const colors = {
+                    'success': 'rgba(107, 191, 89, 0.9)',
+                    'error': 'rgba(231, 76, 60, 0.9)',
+                    'warning': 'rgba(241, 196, 15, 0.9)',
+                    'info': 'rgba(52, 152, 219, 0.9)'
+                };
+                
+                const icons = {
+                    'success': 'fas fa-check-circle',
+                    'error': 'fas fa-exclamation-circle',
+                    'warning': 'fas fa-exclamation-triangle',
+                    'info': 'fas fa-info-circle'
+                };
+                
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.style.background = colors[type] || colors.info;
+                notification.innerHTML = `
+                    <i class="${icons[type] || icons.info}"></i>
+                    <span>${message}</span>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 500);
+                }, 3000);
+            }
+            
+            // Make functions available globally for onclick handlers
+            window.deleteLog = deleteLog;
+            window.editLog = editLog;
+        });
+    </script>
+</body>
+</html>

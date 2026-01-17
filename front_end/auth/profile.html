@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | PetCare Community</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Profile Page Specific Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #000;
+            font-family: 'Cherry Bomb One', cursive;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* SIZE CONTROL VARIABLES */
+        :root {
+            --text-boundary-size: 280px; /* Controls width of text boundaries */
+            --text-boundary-height: 340px; /* Fixed height for cards */
+            --text-boundary-padding: 20px; /* Controls padding inside boundaries */
+            --text-boundary-radius: 25px; /* Controls corner rounding */
+            --text-boundary-blur: 20px; /* Controls blur effect */
+            --text-boundary-opacity: 0.25; /* Controls translucency */
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Top Section - Horizontal Cards */
+        .top-section {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            padding: 40px 20px 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        /* TEXT BOUNDARY STYLES - Individual translucent containers */
+        .text-boundary {
+            background: rgba(255, 255, 255, var(--text-boundary-opacity));
+            backdrop-filter: blur(var(--text-boundary-blur));
+            border-radius: var(--text-boundary-radius);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: var(--text-boundary-padding);
+            width: var(--text-boundary-size);
+            height: var(--text-boundary-height);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                0 0 30px rgba(255, 255, 255, 0.1) inset;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-boundary:hover {
+            transform: translateY(-10px) scale(1.05);
+            background: rgba(255, 255, 255, calc(var(--text-boundary-opacity) + 0.1));
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 40px rgba(255, 255, 255, 0.2) inset;
+            border-color: rgba(255, 255, 255, 0.6);
+            z-index: 5;
+        }
+
+        /* Profile Header Boundary */
+        .profile-header-boundary {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            overflow: hidden;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .profile-email {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .profile-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            color: white;
+            padding: 8px 20px;
+            font-size: 14px;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        /* Info Section Boundaries */
+        .info-boundary {
+            overflow-y: auto;
+        }
+
+        .info-boundary::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .info-boundary::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .info-boundary::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 22px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .info-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: white;
+            font-size: 16px;
+            text-align: right;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .edit-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            font-size: 13px;
+            font-family: 'Cherry Bomb One', cursive;
+            transition: all 0.3s ease;
+            padding: 4px 8px;
+            border-radius: 10px;
+        }
+
+        /* Login Message Boundary */
+        .login-boundary {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-message {
+            color: white;
+            margin: 10px 0;
+        }
+
+        .login-message p {
+            margin: 10px 0;
+            letter-spacing: 0.5px;
+        }
+
+        /* Bottom Section - Centered Back Button */
+        .bottom-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding: 40px 20px;
+            margin-top: auto;
+        }
+
+        .back-button {
+            width: 200px;
+            height: 50px;
+        }
+
+        .back-button button {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Cherry Bomb One', cursive;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            background: rgba(34, 197, 94, 0.25);
+            border: 2px solid rgba(34, 197, 94, 0.5);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-family: 'Cherry Bomb One', cursive;
+            letter-spacing: 1px;
+        }
+
+        .action-btn:hover {
+            background: rgba(34, 197, 94, 0.35);
+            transform: translateY(-3px);
+        }
+
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.35);
+        }
+
+        /* Flash messages styling */
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .flash-message {
+            color: white;
+            font-size: 14px;
+            text-align: center;
+            padding: 12px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .flash-success {
+            background: rgba(81, 207, 102, 0.3);
+            border-color: rgba(81, 207, 102, 0.5);
+        }
+        
+        .flash-danger {
+            background: rgba(255, 107, 107, 0.3);
+            border-color: rgba(255, 107, 107, 0.5);
+        }
+        
+        .flash-info {
+            background: rgba(45, 150, 255, 0.3);
+            border-color: rgba(45, 150, 255, 0.5);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .top-section {
+                gap: 20px;
+            }
+            
+            :root {
+                --text-boundary-size: 250px;
+                --text-boundary-height: 320px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-section {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+                padding-top: 60px;
+            }
+            
+            :root {
+                --text-boundary-size: 90%;
+                --text-boundary-height: auto;
+                min-height: 300px;
+            }
+            
+            .text-boundary {
+                max-width: 400px;
+            }
+            
+            .bottom-section {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --text-boundary-padding: 15px;
+            }
+            
+            .section-title {
+                font-size: 20px;
+            }
+            
+            .profile-name {
+                font-size: 22px;
+            }
+            
+            .back-button {
+                width: 180px;
+                height: 45px;
+            }
+            
+            .back-button button {
+                font-size: 16px;
+            }
+            
+            .action-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Flash Messages -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="/assets/v_profile.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Top Section - Three Horizontal Cards -->
+    <div class="top-section">
+        <!-- Card 1: Profile Info -->
+        <div class="text-boundary profile-header-boundary">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    {% if user %}
+                    <img id="profileAvatar" src="https://ui-avatars.com/api/?name={{ user.username }}&background=7c3aed&color=fff&size=200" alt="Profile Picture">
+                    {% else %}
+                    <img id="profileAvatar" src="https://ui-avatars.com/api/?name=Guest&background=666&color=fff&size=200" alt="Profile Picture">
+                    {% endif %}
+                </div>
+                
+                <h1 class="profile-name" id="profileName">
+                    {% if user %}{{ user.username|upper }}{% else %}GUEST USER{% endif %}
+                </h1>
+                <p class="profile-email" id="profileEmail">
+                    {% if user %}{{ user.email }}{% else %}Sign in to see your profile{% endif %}
+                </p>
+                <div class="profile-badge">
+                    <i class="fas fa-paw"></i> PET CARE
+                </div>
+            </div>
+            
+            <!-- Action Button inside card -->
+            {% if user %}
+            <a href="{{ url_for('logout') }}" class="action-btn logout-btn" id="logoutButton">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="action-btn login-btn" id="loginButton">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </a>
+            {% endif %}
+        </div>
+
+        {% if user %}
+        <!-- Card 2: Personal Information (Shown when logged in) -->
+        <div id="personalInfo" class="text-boundary info-boundary">
+            <h2 class="section-title">
+                <i class="fas fa-user"></i> ABOUT YOU
+            </h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Member Since</span>
+                    <span class="info-value" id="joinDate">
+                        {{ user.created_at.strftime('%b %d, %Y') if user.created_at else 'Recently' }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Status</span>
+                    <span class="info-value" style="color: #10b981;">
+                        <i class="fas fa-check-circle"></i> Active
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Email</span>
+                    <span class="info-value" id="userEmail">{{ user.email }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Account Type</span>
+                    <span class="info-value">
+                        {% if user.is_admin %}Admin{% else %}Member{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Pet Information (Shown when logged in) -->
+        <div id="petInfo" class="text-boundary info-boundary">
+            <h2 class="section-title">
+                <i class="fas fa-paw"></i> YOUR PET
+            </h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Pet Name</span>
+                    <span class="info-value" id="petName">Not set</span>
+                    <button class="edit-btn" onclick="editPetName()">Edit</button>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Pet Type</span>
+                    <span class="info-value" id="petType">Not set</span>
+                    <button class="edit-btn" onclick="editPetType()">Edit</button>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Location</span>
+                    <span class="info-value" id="location">Not set</span>
+                    <button class="edit-btn" onclick="editLocation()">Edit</button>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Care Points</span>
+                    <span class="info-value">156 <i class="fas fa-star" style="color: gold;"></i></span>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Card 2 & 3 Replacement: Guest Message (Shown when NOT logged in) -->
+        <div id="guestMessage1" class="text-boundary login-boundary" style="display: flex;">
+            <div class="login-message">
+                <p><i class="fas fa-lock" style="font-size: 48px; margin-bottom: 20px; color: rgba(255,255,255,0.9);"></i></p>
+                <p style="font-size: 22px;">ACCESS LOCKED</p>
+                <p style="font-size: 16px; color: rgba(255,255,255,0.8);">
+                    Sign in to unlock all features
+                </p>
+                <div style="margin-top: 20px;">
+                    <p style="font-size: 14px; color: rgba(255,255,255,0.7); text-align: left;">
+                        <i class="fas fa-check-circle"></i> Pet health tracking<br>
+                        <i class="fas fa-check-circle"></i> Vet appointments<br>
+                        <i class="fas fa-check-circle"></i> Community forums<br>
+                        <i class="fas fa-check-circle"></i> Wellness tips
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="guestMessage2" class="text-boundary login-boundary" style="display: flex;">
+            <div class="login-message">
+                <p><i class="fas fa-users" style="font-size: 48px; margin-bottom: 20px; color: rgba(255,255,255,0.9);"></i></p>
+                <p style="font-size: 22px;">JOIN COMMUNITY</p>
+                <p style="font-size: 16px; color: rgba(255,255,255,0.8);">
+                    Connect with pet lovers
+                </p>
+                <div style="margin-top: 20px;">
+                    <p style="font-size: 14px; color: rgba(255,255,255,0.7); text-align: left;">
+                        <i class="fas fa-check-circle"></i> Share pet photos<br>
+                        <i class="fas fa-check-circle"></i> Get expert advice<br>
+                        <i class="fas fa-check-circle"></i> Find play dates<br>
+                        <i class="fas fa-check-circle"></i> Emergency support
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Bottom Section - Centered Back Button -->
+    <div class="bottom-section">
+        <div class="back-button">
+            <button onclick="window.location.href='/'">
+                <i class="fas fa-home"></i> Back to Home
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Profile editing functions (for future enhancement)
+        function editPetName() {
+            const currentName = document.getElementById('petName').textContent;
+            const newName = prompt('Enter your pet\'s name:', currentName === 'Not set' ? '' : currentName);
+            if (newName !== null && newName.trim() !== '') {
+                // In future, you can make AJAX call to update in database
+                document.getElementById('petName').textContent = newName;
+            }
+        }
+
+        function editPetType() {
+            const currentType = document.getElementById('petType').textContent;
+            const newType = prompt('Enter your pet type (e.g., Dog, Cat, Rabbit):', currentType === 'Not set' ? '' : currentType);
+            if (newType !== null && newType.trim() !== '') {
+                document.getElementById('petType').textContent = newType;
+            }
+        }
+
+        function editLocation() {
+            const currentLocation = document.getElementById('location').textContent;
+            const newLocation = prompt('Enter your location:', currentLocation === 'Not set' ? '' : currentLocation);
+            if (newLocation !== null && newLocation.trim() !== '') {
+                document.getElementById('location').textContent = newLocation;
+            }
+        }
+
+        // Auto-hide flash messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0';
+                    message.style.transform = 'translateX(-50%) translateY(-20px)';
+                    setTimeout(() => {
+                        message.remove();
+                    }, 300);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

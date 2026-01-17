@@ -1,0 +1,1008 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetCare AI | Tech Tools Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #00f7ff;
+            --secondary: #9d4edd;
+            --accent-ai: #00ff88;
+            --accent-utility: #ffaa00;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: #000;
+            color: var(--text-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Video Background */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                45deg,
+                rgba(9, 0, 59, 0.7) 0%,
+                rgba(157, 78, 221, 0.5) 25%,
+                rgba(0, 247, 255, 0.4) 50%,
+                rgba(0, 255, 136, 0.3) 75%,
+                rgba(255, 170, 0, 0.2) 100%
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -1;
+            mix-blend-mode: overlay;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism Base */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 247, 255, 0.2);
+        }
+
+        .nav-links a.active {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: black;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem 6rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent-ai));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            animation: textGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            from { filter: drop-shadow(0 0 10px rgba(0, 247, 255, 0.5)); }
+            to { filter: drop-shadow(0 0 20px rgba(157, 78, 221, 0.7)); }
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--accent-ai);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 6rem;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-header i {
+            font-size: 2rem;
+        }
+
+        .ai-section .section-header i {
+            color: var(--accent-ai);
+        }
+
+        .utility-section .section-header i {
+            color: var(--accent-utility);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .section-desc {
+            opacity: 0.8;
+            margin-left: auto;
+            font-size: 0.95rem;
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .scroll-indicator i {
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+        }
+
+        /* Horizontal Scroll Containers */
+        .scroll-container-wrapper {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .scroll-container {
+            display: flex;
+            gap: 2rem;
+            padding: 1rem;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            cursor: grab;
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scroll-container.dragging {
+            scroll-behavior: auto;
+            cursor: grabbing;
+        }
+
+        .scroll-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s, background 0.3s;
+        }
+
+        .scroll-container-wrapper:hover .scroll-arrow {
+            opacity: 1;
+        }
+
+        .scroll-arrow:hover {
+            background: rgba(0, 247, 255, 0.3);
+        }
+
+        .scroll-arrow.left {
+            left: 10px;
+        }
+
+        .scroll-arrow.right {
+            right: 10px;
+        }
+
+        .scroll-speed {
+            position: absolute;
+            bottom: -30px;
+            right: 10px;
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        /* Tool Cards */
+        .tool-card {
+            flex: 0 0 320px;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            min-height: 420px;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--card-accent, var(--primary));
+        }
+
+        .tool-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--card-accent, var(--primary));
+        }
+
+        .card-badge {
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: var(--badge-bg, rgba(0, 247, 255, 0.2));
+            color: var(--card-accent, var(--primary));
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .card-desc {
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .card-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .card-features li {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-features li i {
+            color: var(--card-accent, var(--primary));
+            font-size: 0.8rem;
+        }
+
+        .card-button {
+            padding: 1rem;
+            text-align: center;
+            background: var(--card-accent, var(--primary));
+            color: black;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            margin-top: auto;
+        }
+
+        .card-button:hover {
+            filter: brightness(1.2);
+            transform: scale(1.02);
+        }
+
+        .card-button.coming-soon {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .card-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--status-color, #00ff88);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .model-ref {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 247, 255, 0.1);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 247, 255, 0.3);
+        }
+
+        .copyright {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            border-left: 4px solid var(--accent-utility);
+            border-radius: 10px;
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast i {
+            color: var(--accent-utility);
+            margin-right: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero h1 { font-size: 3rem; }
+            .nav-links { gap: 1rem; }
+            .section-title { font-size: 1.7rem; }
+        }
+
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 1.5rem; }
+            .hero { padding: 3rem 1rem; }
+            .hero h1 { font-size: 2.5rem; }
+            .tool-card { flex: 0 0 300px; }
+            .scroll-arrow { display: none; }
+            .section-header { flex-direction: column; align-items: flex-start; }
+            .section-desc { margin-left: 0; }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2rem; }
+            .tool-card { flex: 0 0 280px; min-height: 380px; padding: 1.5rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="../resourses/well_vid.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="gradient-overlay"></div>
+
+    <!-- Header -->
+    <header>
+        <nav class="navbar glass">
+            <div class="logo">
+                <i class="fas fa-paw"></i>
+                <span>PetCare AI</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">Wellness</a></li>
+                <li><a href="#">AI Tools</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>AI-Powered Pet Care Tools</h1>
+        <p>Revolutionizing pet wellness with advanced artificial intelligence. Explore our suite of cutting-edge tools designed for modern pet owners.</p>
+        <div class="ai-badge">
+            <i class="fas fa-brain"></i>
+            <span>Powered by DeepPet AI Model</span>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main>
+        <!-- AI Tools Section -->
+        <section class="ai-section">
+            <div class="section-header">
+                <i class="fas fa-robot"></i>
+                <h2 class="section-title">AI-Powered Tools</h2>
+                <p class="section-desc">Intelligent solutions powered by our proprietary AI model</p>
+            </div>
+            <div class="scroll-indicator">
+                <i class="fas fa-arrow-right"></i>
+                <span>Drag or use mouse wheel to scroll horizontally</span>
+            </div>
+            
+            <div class="scroll-container-wrapper">
+                <button class="scroll-arrow left"><i class="fas fa-chevron-left"></i></button>
+                <div class="scroll-container" id="aiScroll">
+                    <!-- AI Tools will be inserted here -->
+                </div>
+                <button class="scroll-arrow right"><i class="fas fa-chevron-right"></i></button>
+                <div class="scroll-speed">Speed: <span id="aiSpeed">0</span> px/s</div>
+            </div>
+        </section>
+
+        <!-- Utility Tools Section -->
+        <section class="utility-section" style="margin-top: 6rem;">
+            <div class="section-header">
+                <i class="fas fa-tools"></i>
+                <h2 class="section-title">Utility Tools</h2>
+                <p class="section-desc">Essential tools for everyday pet care management</p>
+            </div>
+            <div class="scroll-indicator">
+                <i class="fas fa-arrow-right"></i>
+                <span>Drag or use mouse wheel to scroll horizontally</span>
+            </div>
+            
+            <div class="scroll-container-wrapper">
+                <button class="scroll-arrow left"><i class="fas fa-chevron-left"></i></button>
+                <div class="scroll-container" id="utilityScroll">
+                    <!-- Utility Tools will be inserted here -->
+                </div>
+                <button class="scroll-arrow right"><i class="fas fa-chevron-right"></i></button>
+                <div class="scroll-speed">Speed: <span id="utilitySpeed">0</span> px/s</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content glass" style="padding: 2rem;">
+            <div class="model-ref">
+                <i class="fas fa-microchip"></i>
+                <span>Powered by DeepPet AI Model v3.2</span>
+            </div>
+            <p class="copyright">© 2023 PetCare AI Technologies. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-clock"></i>
+        <span>This tool is coming soon! We're working hard to launch it.</span>
+    </div>
+
+    <script>
+        // Tool Data
+        const aiTools = [
+            {
+                id: 1,
+                title: "Health Diagnoser",
+                icon: "fas fa-heartbeat",
+                badge: "AI-Powered",
+                accent: "#00ff88",
+                description: "AI analysis of pet symptoms with 95% accuracy diagnosis",
+                features: ["Symptom analysis", "Condition prediction", "Vet recommendations", "Emergency detection"],
+                status: "live",
+                link: "#",
+                comingSoon: false
+            },
+            {
+                id: 2,
+                title: "Behavior Decoder",
+                icon: "fas fa-brain",
+                badge: "AI-Powered",
+                accent: "#9d4edd",
+                description: "Understand your pet's behavior patterns and emotions",
+                features: ["Emotion recognition", "Behavior tracking", "Training tips", "Anxiety detection"],
+                status: "live",
+                link: "#",
+                comingSoon: false
+            },
+            {
+                id: 3,
+                title: "Nutrition Optimizer",
+                icon: "fas fa-apple-alt",
+                badge: "AI-Powered",
+                accent: "#00f7ff",
+                description: "Personalized meal plans based on breed, age, and health",
+                features: ["Diet plans", "Allergy detection", "Portion control", "Supplement advice"],
+                status: "beta",
+                link: "#",
+                comingSoon: false
+            },
+            {
+                id: 4,
+                title: "Breed Identifier",
+                icon: "fas fa-dna",
+                badge: "AI-Powered",
+                accent: "#ff6b6b",
+                description: "Upload a photo to identify breed mix and characteristics",
+                features: ["Breed detection", "Genetic traits", "Health predispositions", "Photo analysis"],
+                status: "live",
+                link: "#",
+                comingSoon: false
+            },
+            {
+                id: 5,
+                title: "Aging Companion",
+                icon: "fas fa-hourglass-half",
+                badge: "Coming Soon",
+                accent: "#ffaa00",
+                description: "AI monitoring for senior pets with predictive health alerts",
+                features: ["Mobility tracking", "Pain detection", "Cognitive assessment", "Care planning"],
+                status: "soon",
+                link: "#",
+                comingSoon: true
+            }
+        ];
+
+        const utilityTools = [
+            {
+                id: 6,
+                title: "Vet Finder",
+                icon: "fas fa-map-marker-alt",
+                badge: "Live",
+                accent: "#4dabf7",
+                description: "Find the nearest veterinary clinics with ratings and reviews",
+                features: ["Location-based", "Emergency services", "User reviews", "Appointment booking"],
+                status: "live",
+                link: "#",
+                comingSoon: false
+            },
+            {
+                id: 7,
+                title: "Vaccination Tracker",
+                icon: "fas fa-syringe",
+                badge: "Live",
+                accent: "#51cf66",
+                description: "Never miss a vaccination with smart reminders and records",
+                features: ["Schedule tracking", "Reminders", "Digital records", "Clinic integration"],
+                status: "live",
+                link: "#",
+                comingSoon: false
+            },
+            {
+                id: 8,
+                title: "Pet Sitter Network",
+                icon: "fas fa-hands-helping",
+                badge: "Beta",
+                accent: "#ff922b",
+                description: "Connect with trusted pet sitters and walkers in your area",
+                features: ["Background checks", "Reviews & ratings", "Booking system", "Live updates"],
+                status: "beta",
+                link: "#",
+                comingSoon: false
+            },
+            {
+                id: 9,
+                title: "Expense Manager",
+                icon: "fas fa-chart-pie",
+                badge: "Live",
+                accent: "#da77f2",
+                description: "Track and optimize your pet-related expenses with AI insights",
+                features: ["Cost tracking", "Budget planning", "Savings tips", "Receipt scanning"],
+                status: "live",
+                link: "#",
+                comingSoon: false
+            },
+            {
+                id: 10,
+                title: "Training Assistant",
+                icon: "fas fa-graduation-cap",
+                badge: "Coming Soon",
+                accent: "#ff6b6b",
+                description: "Step-by-step training programs with progress tracking",
+                features: ["Custom programs", "Video tutorials", "Progress tracking", "Expert tips"],
+                status: "soon",
+                link: "#",
+                comingSoon: true
+            }
+        ];
+
+        // Initialize Scroll Containers
+        class InfiniteScroll {
+            constructor(containerId, tools, speedElementId) {
+                this.container = document.getElementById(containerId);
+                this.speedElement = document.getElementById(speedElementId);
+                this.tools = tools;
+                this.isDragging = false;
+                this.startX = 0;
+                this.scrollLeft = 0;
+                this.velocity = 0;
+                this.lastX = 0;
+                this.timestamp = 0;
+                this.autoScrollSpeed = 0.5;
+                this.isAutoScrolling = true;
+                this.animationId = null;
+                this.cloneCount = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.renderCards();
+                this.setupEventListeners();
+                this.startAnimation();
+            }
+
+            renderCards() {
+                // Clear container
+                this.container.innerHTML = '';
+                this.cloneCount = 0;
+
+                // Render original cards
+                this.tools.forEach(tool => {
+                    this.container.appendChild(this.createCard(tool));
+                });
+
+                // Create duplicates for seamless loop (3 copies)
+                for (let i = 0; i < 3; i++) {
+                    this.tools.forEach(tool => {
+                        const clone = this.createCard(tool);
+                        this.container.appendChild(clone);
+                        this.cloneCount++;
+                    });
+                }
+            }
+
+            createCard(tool) {
+                const card = document.createElement('div');
+                card.className = 'tool-card glass';
+                card.style.setProperty('--card-accent', tool.accent);
+                
+                const statusColor = tool.status === 'live' ? '#00ff88' : 
+                                  tool.status === 'beta' ? '#ffaa00' : '#ff6b6b';
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="${tool.icon}"></i>
+                        </div>
+                        <div class="card-badge" style="--badge-bg: ${tool.accent}22">
+                            ${tool.badge}
+                        </div>
+                    </div>
+                    <h3 class="card-title">${tool.title}</h3>
+                    <p class="card-desc">${tool.description}</p>
+                    <ul class="card-features">
+                        ${tool.features.map(f => `<li><i class="fas fa-check"></i>${f}</li>`).join('')}
+                    </ul>
+                    <button class="card-button ${tool.comingSoon ? 'coming-soon' : ''}" 
+                            data-id="${tool.id}" 
+                            data-coming="${tool.comingSoon}">
+                        ${tool.comingSoon ? 'Coming Soon' : 'Launch Tool'}
+                    </button>
+                    <div class="card-status">
+                        <div class="status-dot" style="--status-color: ${statusColor}"></div>
+                        <span>${tool.status === 'soon' ? 'Coming Soon' : tool.status === 'beta' ? 'Beta Testing' : 'Live & Active'}</span>
+                    </div>
+                `;
+
+                return card;
+            }
+
+            setupEventListeners() {
+                // Mouse drag
+                this.container.addEventListener('mousedown', (e) => {
+                    this.isDragging = true;
+                    this.container.classList.add('dragging');
+                    this.isAutoScrolling = false;
+                    this.startX = e.pageX - this.container.offsetLeft;
+                    this.scrollLeft = this.container.scrollLeft;
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!this.isDragging) return;
+                    e.preventDefault();
+                    const x = e.pageX - this.container.offsetLeft;
+                    const walk = (x - this.startX) * 2;
+                    this.container.scrollLeft = this.scrollLeft - walk;
+                    
+                    // Calculate velocity
+                    const now = Date.now();
+                    const deltaX = this.lastX - this.container.scrollLeft;
+                    const deltaTime = now - this.timestamp;
+                    
+                    if (deltaTime > 0) {
+                        this.velocity = deltaX / deltaTime;
+                    }
+                    
+                    this.lastX = this.container.scrollLeft;
+                    this.timestamp = now;
+                });
+
+                document.addEventListener('mouseup', () => {
+                    this.isDragging = false;
+                    this.container.classList.remove('dragging');
+                    this.isAutoScrolling = true;
+                });
+
+                // Touch events
+                this.container.addEventListener('touchstart', (e) => {
+                    this.isDragging = true;
+                    this.isAutoScrolling = false;
+                    this.startX = e.touches[0].pageX - this.container.offsetLeft;
+                    this.scrollLeft = this.container.scrollLeft;
+                });
+
+                this.container.addEventListener('touchmove', (e) => {
+                    if (!this.isDragging) return;
+                    const x = e.touches[0].pageX - this.container.offsetLeft;
+                    const walk = (x - this.startX) * 2;
+                    this.container.scrollLeft = this.scrollLeft - walk;
+                });
+
+                this.container.addEventListener('touchend', () => {
+                    this.isDragging = false;
+                    this.isAutoScrolling = true;
+                });
+
+                // Mouse wheel
+                this.container.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    this.isAutoScrolling = false;
+                    this.container.scrollLeft += e.deltaY * 0.5;
+                    
+                    // Reset auto-scroll after inactivity
+                    clearTimeout(this.autoScrollTimeout);
+                    this.autoScrollTimeout = setTimeout(() => {
+                        this.isAutoScrolling = true;
+                    }, 3000);
+                });
+
+                // Arrow buttons
+                const leftArrow = this.container.parentElement.querySelector('.scroll-arrow.left');
+                const rightArrow = this.container.parentElement.querySelector('.scroll-arrow.right');
+
+                leftArrow.addEventListener('click', () => {
+                    this.isAutoScrolling = false;
+                    this.container.scrollLeft -= 400;
+                });
+
+                rightArrow.addEventListener('click', () => {
+                    this.isAutoScrolling = false;
+                    this.container.scrollLeft += 400;
+                });
+
+                // Card button clicks
+                this.container.addEventListener('click', (e) => {
+                    const button = e.target.closest('.card-button');
+                    if (!button) return;
+                    
+                    if (button.classList.contains('coming-soon')) {
+                        e.preventDefault();
+                        showToast();
+                    }
+                });
+            }
+
+            startAnimation() {
+                const animate = () => {
+                    // Update speed display
+                    const speed = Math.abs(this.velocity * 60);
+                    this.speedElement.textContent = Math.round(speed);
+                    
+                    // Apply friction to velocity
+                    this.velocity *= 0.95;
+                    
+                    // Auto scroll when idle
+                    if (this.isAutoScrolling && !this.isDragging) {
+                        this.container.scrollLeft += this.autoScrollSpeed;
+                    }
+                    
+                    // Infinite loop logic
+                    const scrollWidth = this.container.scrollWidth;
+                    const clientWidth = this.container.clientWidth;
+                    const scrollLeft = this.container.scrollLeft;
+                    
+                    // If scrolled past the original content, reset to beginning
+                    const originalContentWidth = scrollWidth / (this.cloneCount / this.tools.length + 1);
+                    if (scrollLeft >= originalContentWidth * 1.5) {
+                        this.container.scrollLeft = scrollLeft - originalContentWidth;
+                    }
+                    // If scrolled before beginning, reset to end
+                    else if (scrollLeft <= 0) {
+                        this.container.scrollLeft = originalContentWidth * 0.5;
+                    }
+                    
+                    this.animationId = requestAnimationFrame(animate);
+                };
+                
+                animate();
+            }
+        }
+
+        // Toast Notification
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize when DOM loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const aiScroll = new InfiniteScroll('aiScroll', aiTools, 'aiSpeed');
+            const utilityScroll = new InfiniteScroll('utilityScroll', utilityTools, 'utilitySpeed');
+
+            // Add hover effects to cards
+            document.querySelectorAll('.tool-card').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-10px) rotateX(5deg)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) rotateX(0)';
+                });
+            });
+
+            // Fade in animation on load
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                document.body.style.transition = 'opacity 1s';
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Reset scroll positions to avoid visual glitches
+            document.getElementById('aiScroll').scrollLeft = 0;
+            document.getElementById('utilityScroll').scrollLeft = 0;
+        });
+    </script>
+</body>
+</html>
+```

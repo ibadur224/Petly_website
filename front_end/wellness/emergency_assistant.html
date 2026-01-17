@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Assistant | PetPal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #ff8c42;
+            --accent-color: #e74c3c; /* Red accent for emergency */
+            --transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cherry Bomb One', cursive;
+        }
+        
+        body {
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Video Background */
+        #video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+        
+        /* Subtle overlay with red tint for emergency */
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(231, 76, 60, 0.15), rgba(0, 0, 0, 0.5));
+            z-index: -1;
+        }
+        
+        /* Content wrapper */
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Title */
+        .page-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 2px;
+        }
+        
+        .logo i {
+            color: var(--accent-color);
+        }
+        
+        /* Emergency Alert Banner */
+        .emergency-alert {
+            background: rgba(231, 76, 60, 0.2);
+            border: 2px solid rgba(231, 76, 60, 0.4);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+        
+        .emergency-alert h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+        
+        .emergency-alert p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Main Container */
+        .main-container {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        
+        /* Emergency Guide Section */
+        .emergency-guide {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s 0.5s ease forwards;
+        }
+        
+        .guide-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .guide-title i {
+            color: var(--accent-color);
+        }
+        
+        .guide-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .guide-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .guide-item h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .guide-item p {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        /* AI Assistant Section */
+        .ai-assistant {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s 0.8s ease forwards;
+        }
+        
+        .assistant-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .assistant-title i {
+            color: var(--accent-color);
+        }
+        
+        .assistant-description {
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        /* Input area */
+        .input-area {
+            margin-bottom: 1.5rem;
+        }
+        
+        .symptom-input {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .symptom-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .submit-btn {
+            background: rgba(231, 76, 60, 0.8);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            background: rgba(231, 76, 60, 1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        /* Response area */
+        .response-area {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+        
+        .response-placeholder {
+            opacity: 0.7;
+            text-align: center;
+            font-style: italic;
+        }
+        
+        .ai-response {
+            line-height: 1.6;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Location Search Section */
+        .location-search-section {
+            width: 100%;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s 1.1s ease forwards;
+        }
+        
+        .search-container {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .search-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .search-title i {
+            color: var(--accent-color);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .detect-btn {
+            background: rgba(74, 111, 165, 0.7);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        
+        .detect-btn:hover {
+            background: rgba(74, 111, 165, 0.9);
+            transform: translateY(-2px);
+        }
+        
+        .detect-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .current-location {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .current-location p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .location-details {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .location-details h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .location-details h3 i {
+            color: var(--accent-color);
+        }
+        
+        .location-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-item {
+            background: rgba(255, 255, 255, 0.07);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 0.3rem;
+        }
+        
+        .info-value {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.95);
+        }
+        
+        /* Loading State for Emergency Numbers */
+        .numbers-loading {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .numbers-loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+        
+        .numbers-loading p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Emergency Contacts */
+        .emergency-contacts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s 1.4s ease forwards;
+        }
+        
+        .contact-card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(8px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .contact-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-5px);
+        }
+        
+        .contact-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+        
+        .contact-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-card p {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .contact-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Local Emergency Numbers */
+        .local-emergency-numbers {
+            width: 100%;
+            margin-bottom: 2rem;
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        
+        .local-emergency-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .local-emergency-title i {
+            color: var(--accent-color);
+        }
+        
+        .local-numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .local-number-card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(8px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .local-number-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-3px);
+        }
+        
+        .local-number-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .local-number-name {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .local-number-distance {
+            background: rgba(231, 76, 60, 0.3);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .local-number-details p {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .local-number-details i {
+            color: var(--accent-color);
+            width: 20px;
+        }
+        
+        .local-number-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        
+        /* Home Icon at bottom */
+        .home-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+        
+        .home-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(8px);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: var(--transition);
+            opacity: 0;
+            animation: fadeIn 1s 2s ease forwards;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .home-link:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.1) rotate(360deg);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .emergency-contacts, .local-numbers-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .detect-btn {
+                width: 100%;
+            }
+            
+            .suggestions-box {
+                width: calc(100% - 4rem);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 1.5rem;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .emergency-alert h2 {
+                font-size: 1.5rem;
+            }
+            
+            .emergency-contacts, .local-numbers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .guide-title, .assistant-title, .search-title, .local-emergency-title {
+                font-size: 1.5rem;
+            }
+            
+            .home-link {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+            
+            .search-container, .emergency-guide, .ai-assistant {
+                padding: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .guide-item h3, .local-number-name {
+                font-size: 1.1rem;
+            }
+            
+            .symptom-input {
+                font-size: 0.9rem;
+            }
+            
+            .local-number-actions {
+                flex-direction: column;
+            }
+            
+            .location-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <video autoplay muted loop playsinline id="video-background">
+        <source src="../resourses/well_vid.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+    
+    <!-- Subtle overlay -->
+    <div class="video-overlay"></div>
+    
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        <!-- Title -->
+        <div class="page-title">
+            <div class="logo">
+                <i class="fas fa-first-aid"></i> Emergency Assistant
+            </div>
+        </div>
+        
+        <!-- Emergency Alert Banner -->
+        <div class="emergency-alert">
+            <h2><i class="fas fa-exclamation-triangle"></i> In Case of Emergency</h2>
+            <p>For immediate life-threatening situations, contact your veterinarian or emergency animal hospital right away.</p>
+        </div>
+        
+        <!-- Main Container -->
+        <div class="main-container">
+            <!-- Emergency Guide Section -->
+            <div class="emergency-guide">
+                <h2 class="guide-title"><i class="fas fa-book-medical"></i> Emergency Guide</h2>
+                
+                <div class="guide-item" onclick="showGuideDetail('choking')">
+                    <h3>Choking</h3>
+                    <p>Signs: gagging, pawing at mouth, difficulty breathing</p>
+                </div>
+                
+                <div class="guide-item" onclick="showGuideDetail('poisoning')">
+                    <h3>Poisoning</h3>
+                    <p>Signs: vomiting, seizures, lethargy, drooling</p>
+                </div>
+                
+                <div class="guide-item" onclick="showGuideDetail('injury')">
+                    <h3>Injury or Trauma</h3>
+                    <p>Signs: bleeding, limping, whining, visible wounds</p>
+                </div>
+                
+                <div class="guide-item" onclick="showGuideDetail('heatstroke')">
+                    <h3>Heatstroke</h3>
+                    <p>Signs: excessive panting, drooling, bright red gums</p>
+                </div>
+                
+                <div class="guide-item" onclick="showGuideDetail('seizure')">
+                    <h3>Seizure</h3>
+                    <p>Signs: collapsing, jerking, stiffening, loss of consciousness</p>
+                </div>
+            </div>
+            
+            <!-- AI Assistant Section -->
+            <div class="ai-assistant">
+                <h2 class="assistant-title"><i class="fas fa-robot"></i> AI Emergency Assistant</h2>
+                <p class="assistant-description">Describe your pet's symptoms for AI-powered emergency guidance. Remember: This is not a substitute for professional veterinary care.</p>
+                
+                <div class="input-area">
+                    <textarea class="symptom-input" id="symptomInput" placeholder="Describe your pet's symptoms, behavior changes, or the emergency situation..."></textarea>
+                    <button class="submit-btn" id="submitBtn" onclick="getAIResponse()">
+                        <i class="fas fa-bolt"></i> Get Emergency Advice
+                    </button>
+                </div>
+                
+                <div class="loading" id="loadingIndicator">
+                    <i class="fas fa-spinner"></i> Analyzing symptoms...
+                </div>
+                
+                <div class="response-area" id="responseArea">
+                    <div class="response-placeholder" id="responsePlaceholder">
+                        AI emergency advice will appear here after you describe symptoms.
+                    </div>
+                    <div class="ai-response" id="aiResponse" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Location Search Section -->
+        <div class="location-search-section">
+            <div class="search-container">
+                <h2 class="search-title"><i class="fas fa-map-marker-alt"></i> Find Local Emergency Services</h2>
+                <p style="margin-bottom: 1.5rem; opacity: 0.9;">Use your current location to find emergency veterinary services and local emergency numbers</p>
+                
+                <div class="search-box">
+                    <button class="detect-btn" onclick="detectLocation()" id="detectBtn">
+                        <i class="fas fa-location-crosshairs"></i> Detect My Location
+                    </button>
+                </div>
+                
+                <!-- Loading State for Emergency Numbers -->
+                <div class="numbers-loading" id="numbersLoading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Fetching emergency numbers for your area...</p>
+                    <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 0.5rem;">
+                        This may take a few moments as we search for nearby veterinary services
+                    </p>
+                </div>
+                
+                <!-- Current Location Display -->
+                <div class="current-location" id="currentLocation">
+                    <p>
+                        <i class="fas fa-location-dot"></i>
+                        <span id="locationText">Detected location will appear here</span>
+                    </p>
+                </div>
+                
+                <!-- Location Details -->
+                <div class="location-details" id="locationDetails">
+                    <h3><i class="fas fa-info-circle"></i> Location Information</h3>
+                    <div class="location-info" id="locationInfo">
+                        <!-- Location info will be populated here -->
+                    </div>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <button class="contact-btn" onclick="updateEmergencyNumbers()" id="updateNumbersBtn">
+                            <i class="fas fa-phone-volume"></i> Update Emergency Numbers for This Area
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Local Emergency Numbers -->
+        <div class="local-emergency-numbers" id="localEmergencyNumbers">
+            <h2 class="local-emergency-title"><i class="fas fa-phone-volume"></i> Local Emergency Numbers</h2>
+            <div class="local-numbers-grid" id="localNumbersGrid">
+                <!-- Local emergency numbers will be populated here -->
+            </div>
+        </div>
+        
+        <!-- Emergency Contacts (Default) -->
+        <div class="emergency-contacts" id="emergencyContacts">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <h3>Emergency Vet</h3>
+                <p>24/7 emergency veterinary services</p>
+                <a href="tel:+15551234567" class="contact-btn" id="emergencyVetBtn">Call Now</a>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-poison"></i>
+                </div>
+                <h3>Animal Poison Control</h3>
+                <p>ASPCA Animal Poison Control Center</p>
+                <a href="tel:+18884264435" class="contact-btn" id="poisonControlBtn">(888) 426-4435</a>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <h3>Your Veterinarian</h3>
+                <p>Contact your regular vet for emergencies</p>
+                <button class="contact-btn" onclick="promptForVetNumber()">Add Number</button>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3>Nearest Emergency Clinic</h3>
+                <p>Locate the closest 24/7 animal hospital</p>
+                <button class="contact-btn" onclick="findEmergencyClinic()">Find Clinic</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Icon at Bottom -->
+    <div class="home-icon">
+        <a href="../index.html" class="home-link" title="Home">
+            <i class="fas fa-home"></i>
+        </a>
+    </div>
+
+    <script>
+        // Load API configuration
+        let apiConfig = {
+            API_KEY: '',
+            API_ENDPOINT: 'https://api.openai.com/v1/chat/completions',
+            model: 'mistralai/devstral-2512:free'
+        };
+        
+        // Try to load API config from JSON file
+        fetch('api_well.json')
+            .then(response => response.json())
+            .then(data => {
+                apiConfig = data;
+            })
+            .catch(error => {
+                console.log('Could not load API config, using defaults', error);
+            });
+        
+        // Global variables
+        let currentLocation = null;
+        let currentCountry = null;
+        let currentState = null;
+        let currentCity = null;
+        let locationDetectionInProgress = false;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('video-background');
+            
+            // Ensure video plays
+            if (video) {
+                video.play().catch(function(error) {
+                    console.log("Video autoplay failed:", error);
+                });
+            }
+        });
+        
+        async function detectLocation() {
+            if (locationDetectionInProgress) return;
+            
+            const detectBtn = document.getElementById('detectBtn');
+            const locationText = document.getElementById('locationText');
+            const currentLocationDiv = document.getElementById('currentLocation');
+            const numbersLoading = document.getElementById('numbersLoading');
+            
+            // Disable button and show loading state
+            detectBtn.disabled = true;
+            detectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detecting Location...';
+            locationDetectionInProgress = true;
+            
+            // Clear previous results
+            currentLocationDiv.style.display = 'none';
+            document.getElementById('locationDetails').style.display = 'none';
+            document.getElementById('localEmergencyNumbers').style.display = 'none';
+            numbersLoading.style.display = 'none';
+            
+            if (!navigator.geolocation) {
+                showLocationError("Geolocation is not supported by your browser. Please try a different browser or device.");
+                resetButton();
+                return;
+            }
+            
+            // Check if we have cached location from localStorage
+            const cachedLocation = localStorage.getItem('petEmergencyLocation');
+            const cachedCoords = localStorage.getItem('petEmergencyCoords');
+            const cachedTime = localStorage.getItem('petEmergencyTime');
+            
+            // Use cached location if it's less than 1 hour old
+            if (cachedLocation && cachedCoords && cachedTime) {
+                const cacheAge = Date.now() - parseInt(cachedTime);
+                if (cacheAge < 3600000) { // 1 hour in milliseconds
+                    try {
+                        const coords = JSON.parse(cachedCoords);
+                        processLocation(
+                            coords.lat, 
+                            coords.lon, 
+                            cachedLocation, 
+                            JSON.parse(localStorage.getItem('petEmergencyAddress') || '{}')
+                        );
+                        showNotification("Using cached location data from recent detection.");
+                        return;
+                    } catch (e) {
+                        console.log("Failed to parse cached location, falling back to fresh detection");
+                    }
+                }
+            }
+            
+            navigator.geolocation.getCurrentPosition(
+                async function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    // First, try to get location from browser's high-accuracy geolocation
+                    try {
+                        locationText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting location details...';
+                        currentLocationDiv.style.display = 'block';
+                        
+                        // Try multiple geocoding services for better accuracy
+                        const locationData = await getAccurateLocation(lat, lon);
+                        
+                        if (locationData) {
+                            processLocation(
+                                lat, 
+                                lon, 
+                                locationData.displayName, 
+                                locationData.address
+                            );
+                        } else {
+                            throw new Error("Could not get location details");
+                        }
+                        
+                    } catch (error) {
+                        console.error("High-accuracy location error:", error);
+                        // Fallback to IP-based location
+                        await getIPBasedLocation(lat, lon);
+                    }
+                },
+                async function(error) {
+                    console.error("Geolocation error:", error);
+                    
+                    let errorMessage = "Unable to detect your precise location. ";
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage += "Please allow location access in your browser settings or click 'Detect My Location' again to grant permission.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage += "Location information is unavailable. Trying alternative method...";
+                            await getIPBasedLocation();
+                            return;
+                        case error.TIMEOUT:
+                            errorMessage += "Location request timed out. Trying alternative method...";
+                            await getIPBasedLocation();
+                            return;
+                        default:
+                            errorMessage += "Trying alternative method...";
+                            await getIPBasedLocation();
+                            return;
+                    }
+                    
+                    showLocationError(errorMessage);
+                    resetButton();
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 60000 // Accept cached position up to 1 minute old
+                }
+            );
+        }
+        
+        async function getAccurateLocation(lat, lon) {
+            // Try multiple geocoding services for better accuracy
+            const services = [
+                {
+                    name: 'nominatim',
+                    url: `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`,
+                    parser: (data) => ({
+                        displayName: data.display_name,
+                        address: data.address
+                    })
+                },
+                {
+                    name: 'locationiq',
+                    url: `https://us1.locationiq.com/v1/reverse.php?key=pk.9a8f9b8f9b8f9b8f9b8f9b8f9b8f9b8f&lat=${lat}&lon=${lon}&format=json`,
+                    parser: (data) => ({
+                        displayName: data.display_name,
+                        address: data.address
+                    })
+                },
+                {
+                    name: 'geocodeapi',
+                    url: `https://geocodeapi.p.rapidapi.com/GetNearestCities?latitude=${lat}&longitude=${lon}&range=0`,
+                    parser: (data) => {
+                        if (data.length > 0) {
+                            const city = data[0];
+                            return {
+                                displayName: `${city.City}, ${city.Region}, ${city.Country}`,
+                                address: {
+                                    city: city.City,
+                                    state: city.Region,
+                                    country: city.Country
+                                }
+                            };
+                        }
+                        return null;
+                    }
+                }
+            ];
+            
+            // Try services in order until one works
+            for (const service of services) {
+                try {
+                    const response = await fetch(service.url, {
+                        headers: service.name === 'geocodeapi' ? {
+                            'X-RapidAPI-Key': 'your-api-key-here',
+                            'X-RapidAPI-Host': 'geocodeapi.p.rapidapi.com'
+                        } : {}
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const result = service.parser(data);
+                        if (result) return result;
+                    }
+                } catch (error) {
+                    console.log(`Service ${service.name} failed:`, error);
+                    continue;
+                }
+            }
+            
+            return null;
+        }
+        
+        async function getIPBasedLocation(fallbackLat = null, fallbackLon = null) {
+            const locationText = document.getElementById('locationText');
+            const currentLocationDiv = document.getElementById('currentLocation');
+            
+            locationText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting approximate location from IP address...';
+            currentLocationDiv.style.display = 'block';
+            
+            try {
+                // Try multiple IP location services
+                const ipServices = [
+                    'https://ipapi.co/json/',
+                    'https://ipinfo.io/json?token=test', // Remove token for public use
+                    'https://api.ipgeolocation.io/ipgeo?apiKey=demo',
+                    'https://geolocation-db.com/json/'
+                ];
+                
+                let ipData = null;
+                
+                for (const serviceUrl of ipServices) {
+                    try {
+                        const response = await fetch(serviceUrl, { timeout: 5000 });
+                        if (response.ok) {
+                            ipData = await response.json();
+                            break;
+                        }
+                    } catch (error) {
+                        continue;
+                    }
+                }
+                
+                if (ipData) {
+                    // Extract location data from different API formats
+                    let city, region, country, lat, lon;
+                    
+                    if (ipData.city !== undefined) {
+                        // ipapi.co format
+                        city = ipData.city;
+                        region = ipData.region;
+                        country = ipData.country_name;
+                        lat = ipData.latitude;
+                        lon = ipData.longitude;
+                    } else if (ipData.loc) {
+                        // ipinfo.io format
+                        city = ipData.city;
+                        region = ipData.region;
+                        country = ipData.country;
+                        [lat, lon] = ipData.loc.split(',');
+                    } else if (ipData.country_name) {
+                        // ipgeolocation.io format
+                        city = ipData.city;
+                        region = ipData.state_prov;
+                        country = ipData.country_name;
+                        lat = ipData.latitude;
+                        lon = ipData.longitude;
+                    }
+                    
+                    // Use fallback coordinates if IP coordinates are not accurate
+                    if ((!lat || !lon) && fallbackLat && fallbackLon) {
+                        lat = fallbackLat;
+                        lon = fallbackLon;
+                    } else if (!lat || !lon) {
+                        // Default to a central location
+                        lat = 39.8283;
+                        lon = -98.5795;
+                    }
+                    
+                    const displayName = `${city || 'Unknown City'}, ${region || 'Unknown Region'}, ${country || 'Unknown Country'}`;
+                    const address = {
+                        city: city,
+                        state: region,
+                        country: country
+                    };
+                    
+                    processLocation(lat, lon, displayName, address);
+                    
+                    showNotification("Using approximate location based on your IP address. For more accurate results, please enable browser location permissions.");
+                    
+                } else {
+                    throw new Error("Could not determine location from IP");
+                }
+                
+            } catch (error) {
+                console.error("IP-based location error:", error);
+                showLocationError("Could not determine your location. Please check your internet connection and try again.");
+                resetButton();
+            }
+        }
+        
+        async function processLocation(lat, lon, displayName, addressDetails = null) {
+            const locationText = document.getElementById('locationText');
+            const currentLocationDiv = document.getElementById('currentLocation');
+            const locationDetailsDiv = document.getElementById('locationDetails');
+            const locationInfoDiv = document.getElementById('locationInfo');
+            const detectBtn = document.getElementById('detectBtn');
+            const numbersLoading = document.getElementById('numbersLoading');
+            
+            // Update button to show success
+            detectBtn.innerHTML = '<i class="fas fa-check-circle"></i> Location Detected';
+            detectBtn.style.background = 'rgba(46, 204, 113, 0.8)';
+            
+            // Update current location display
+            locationText.innerHTML = `<i class="fas fa-location-dot"></i> ${displayName}`;
+            currentLocationDiv.style.display = 'block';
+            
+            // Show location details with a slight delay for better UX
+            setTimeout(() => {
+                // Extract location details
+                const locationInfo = extractLocationInfo(addressDetails, displayName, lat, lon);
+                
+                // Update location info display
+                locationInfoDiv.innerHTML = `
+                    <div class="info-item">
+                        <div class="info-label">City</div>
+                        <div class="info-value">${locationInfo.city || 'Detecting...'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">State/Region</div>
+                        <div class="info-value">${locationInfo.state || 'Detecting...'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Country</div>
+                        <div class="info-value">${locationInfo.country || 'Detecting...'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Coordinates</div>
+                        <div class="info-value">${lat.toFixed(4)}, ${lon.toFixed(4)}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Accuracy</div>
+                        <div class="info-value">${locationInfo.city ? 'High' : 'Approximate'}</div>
+                    </div>
+                `;
+                
+                locationDetailsDiv.style.display = 'block';
+                
+                // Save to global variables
+                currentLocation = { lat: parseFloat(lat), lon: parseFloat(lon), displayName };
+                currentCountry = locationInfo.country;
+                currentState = locationInfo.state;
+                currentCity = locationInfo.city;
+                
+                // Save to localStorage with timestamp
+                localStorage.setItem('petEmergencyLocation', displayName);
+                localStorage.setItem('petEmergencyCoords', JSON.stringify({lat, lon}));
+                localStorage.setItem('petEmergencyAddress', JSON.stringify(locationInfo));
+                localStorage.setItem('petEmergencyTime', Date.now().toString());
+                localStorage.setItem('petEmergencyCountry', locationInfo.country || '');
+                localStorage.setItem('petEmergencyState', locationInfo.state || '');
+                localStorage.setItem('petEmergencyCity', locationInfo.city || '');
+                
+                // Show loading for emergency numbers
+                numbersLoading.style.display = 'block';
+                showNotification("Searching for emergency veterinary services in your area...");
+                
+                // Auto-update emergency numbers with a delay to show the loading state
+                setTimeout(() => {
+                    updateEmergencyNumbers();
+                    numbersLoading.style.display = 'none';
+                }, 2000);
+                
+            }, 500);
+            
+            // Re-enable button after 3 seconds
+            setTimeout(() => {
+                resetButton();
+            }, 3000);
+        }
+        
+        function extractLocationInfo(address, displayName, lat, lon) {
+            if (!address) {
+                // Try to extract from display name
+                const parts = displayName.split(',');
+                if (parts.length >= 3) {
+                    return {
+                        city: parts[0]?.trim(),
+                        state: parts[1]?.trim(),
+                        country: parts[2]?.trim(),
+                        postcode: ''
+                    };
+                } else if (parts.length === 2) {
+                    return {
+                        city: parts[0]?.trim(),
+                        state: '',
+                        country: parts[1]?.trim(),
+                        postcode: ''
+                    };
+                } else {
+                    return {
+                        city: '',
+                        state: '',
+                        country: parts[0]?.trim() || 'Unknown',
+                        postcode: ''
+                    };
+                }
+            }
+            
+            return {
+                city: address.city || address.town || address.village || address.municipality || '',
+                state: address.state || address.region || address.province || '',
+                country: address.country || '',
+                postcode: address.postcode || ''
+            };
+        }
+        
+        function showLocationError(message) {
+            const locationText = document.getElementById('locationText');
+            const currentLocationDiv = document.getElementById('currentLocation');
+            
+            locationText.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            currentLocationDiv.style.display = 'block';
+            currentLocationDiv.style.background = 'rgba(231, 76, 60, 0.1)';
+            currentLocationDiv.style.border = '1px solid rgba(231, 76, 60, 0.3)';
+            
+            // Show suggestion to try again
+            setTimeout(() => {
+                locationText.innerHTML += `<br><small style="opacity: 0.7;">Click 'Detect My Location' again to retry</small>`;
+            }, 1000);
+        }
+        
+        function showNotification(message) {
+            // Create a temporary notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: white;
+                padding: 1rem;
+                border-radius: 10px;
+                z-index: 1000;
+                max-width: 300px;
+                animation: fadeInUp 0.5s ease;
+            `;
+            notification.innerHTML = `
+                <p style="margin: 0; font-size: 0.9rem;">${message}</p>
+            `;
+            document.body.appendChild(notification);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 5000);
+        }
+        
+        function resetButton() {
+            const detectBtn = document.getElementById('detectBtn');
+            detectBtn.disabled = false;
+            detectBtn.innerHTML = '<i class="fas fa-location-crosshairs"></i> Detect My Location';
+            detectBtn.style.background = 'rgba(74, 111, 165, 0.7)';
+            locationDetectionInProgress = false;
+        }
+        
+        function updateEmergencyNumbers() {
+            if (!currentCountry && !currentCity) {
+                showNotification("Please detect your location first to find emergency numbers.");
+                return;
+            }
+            
+            const localEmergencyNumbers = document.getElementById('localEmergencyNumbers');
+            const localNumbersGrid = document.getElementById('localNumbersGrid');
+            const emergencyContacts = document.getElementById('emergencyContacts');
+            const updateNumbersBtn = document.getElementById('updateNumbersBtn');
+            
+            // Disable update button and show loading
+            updateNumbersBtn.disabled = true;
+            updateNumbersBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching Numbers...';
+            
+            // Hide default contacts
+            emergencyContacts.style.display = 'none';
+            
+            // Show loading in the numbers grid
+            localNumbersGrid.innerHTML = `
+                <div style="text-align: center; padding: 2rem; width: 100%; grid-column: 1 / -1;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem; color: var(--accent-color);"></i>
+                    <h3>Finding Emergency Services Near You</h3>
+                    <p style="margin: 1rem 0; opacity: 0.8;">
+                        Searching for veterinary emergency services in ${currentCity || currentState || currentCountry}...
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 1rem;">
+                        <div style="width: 20px; height: 20px; background: var(--accent-color); border-radius: 50%; animation: pulse 1s infinite;"></div>
+                        <div style="width: 20px; height: 20px; background: var(--accent-color); border-radius: 50%; animation: pulse 1s infinite 0.2s;"></div>
+                        <div style="width: 20px; height: 20px; background: var(--accent-color); border-radius: 50%; animation: pulse 1s infinite 0.4s;"></div>
+                    </div>
+                </div>
+            `;
+            
+            localEmergencyNumbers.style.display = 'block';
+            
+            // Scroll to local numbers
+            localEmergencyNumbers.scrollIntoView({behavior: 'smooth'});
+            
+            // Simulate API call with mock data based on location (with realistic delay)
+            setTimeout(() => {
+                const localNumbers = generateLocalEmergencyNumbers();
+                displayLocalNumbers(localNumbers);
+                
+                // Also update the default emergency vet button
+                updateDefaultEmergencyButton(localNumbers);
+                
+                // Re-enable update button
+                updateNumbersBtn.disabled = false;
+                updateNumbersBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Emergency Numbers';
+                
+                showNotification(`Found ${localNumbers.length} emergency services near you`);
+            }, 2500); // Increased delay to make it feel more realistic
+        }
+        
+        function generateLocalEmergencyNumbers() {
+            // Mock data generator based on location with more realistic data
+            const countryCodes = {
+                'USA': { code: '1', poison: '(888) 426-4435', animalControl: '(555) 123-4567' },
+                'Canada': { code: '1', poison: '(855) 764-7669', animalControl: '(555) 987-6543' },
+                'UK': { code: '44', poison: '01202 509000', animalControl: '020 7222 1234' },
+                'Australia': { code: '61', poison: '1300 869 738', animalControl: '(02) 5555 1234' },
+                'India': { code: '91', poison: '1800-11-0033', animalControl: '011-2334 5678' }
+            };
+            
+            const country = currentCountry || 'USA';
+            const countryData = countryCodes[country] || countryCodes['USA'];
+            
+            // Generate mock local numbers based on city/state with more variety
+            const areaCode = generateAreaCode(country, currentState, currentCity);
+            
+            return [
+                {
+                    name: `${currentCity || currentState || 'Local'} 24/7 Emergency Animal Hospital`,
+                    phone: `(${areaCode}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+                    address: generateMockAddress(),
+                    distance: (Math.random() * 8 + 0.5).toFixed(1),
+                    hours: "24/7 Emergency Services",
+                    services: ["Emergency Care", "Surgery", "Critical Care", "X-Ray", "Laboratory"],
+                    rating: (Math.random() * 2 + 3).toFixed(1)
+                },
+                {
+                    name: "Animal Poison Control Center",
+                    phone: countryData.poison,
+                    address: "National Hotline - Available 24/7",
+                    distance: "N/A",
+                    hours: "24/7 Hotline",
+                    services: ["Poison Control", "Toxicology", "Emergency Advice", "Substance Identification"],
+                    rating: "4.8"
+                },
+                {
+                    name: `${currentCity || currentState || 'Local'} Veterinary Emergency Clinic`,
+                    phone: `(${areaCode}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+                    address: generateMockAddress(),
+                    distance: (Math.random() * 5 + 0.3).toFixed(1),
+                    hours: "Mon-Sun: 7AM-11PM | 24/7 Emergency",
+                    services: ["Emergency", "Outpatient", "Diagnostics", "Pharmacy"],
+                    rating: (Math.random() * 2 + 3).toFixed(1)
+                },
+                {
+                    name: `${currentCity || 'Local'} Animal Control & Rescue`,
+                    phone: countryData.animalControl,
+                    address: generateMockAddress(),
+                    distance: (Math.random() * 10 + 1).toFixed(1),
+                    hours: "24/7 Emergency Response",
+                    services: ["Animal Rescue", "Emergency Pickup", "Wildlife Services", "Lost & Found"],
+                    rating: (Math.random() * 2 + 3).toFixed(1)
+                }
+            ];
+        }
+        
+        function generateAreaCode(country, state, city) {
+            // More realistic area codes based on location
+            const areaCodes = {
+                'USA': {
+                    'NY': ['212', '718', '917', '347', '929'],
+                    'CA': ['213', '310', '323', '408', '415', '510', '530', '559', '562', '619', '626', '650', '661', '707', '714', '760', '805', '818', '831', '858', '909', '916', '925', '949', '951'],
+                    'TX': ['210', '214', '254', '281', '325', '361', '409', '432', '469', '512', '682', '713', '737', '806', '817', '830', '832', '903', '915', '936', '940', '956', '972', '979'],
+                    'FL': ['239', '305', '321', '352', '386', '407', '561', '727', '754', '772', '786', '813', '850', '863', '904', '941', '954'],
+                    'IL': ['217', '224', '309', '312', '331', '618', '630', '708', '773', '779', '815', '847', '872']
+                },
+                'Canada': {
+                    'ON': ['226', '249', '289', '343', '365', '416', '437', '519', '548', '613', '647', '705', '807', '905'],
+                    'BC': ['236', '250', '604', '672', '778'],
+                    'QC': ['418', '438', '450', '514', '579', '581', '819'],
+                    'AB': ['403', '587', '780', '825']
+                },
+                'UK': {
+                    'England': ['020', '0121', '0113', '0114', '0115', '0116', '0117', '0118', '01223', '01224', '01225', '01273', '01274', '0131', '01382', '0141', '01482', '0151', '0152', '0161', '01642', '01702', '01707', '01708', '01709', '01752', '01772', '01782', '01792', '01865', '0191', '01902', '01908', '0191', '023', '028', '029'],
+                    'Scotland': ['0131', '0141', '01224', '01382', '0141'],
+                    'Wales': ['029', '01248', '01267', '01239', '01286', '01248']
+                }
+            };
+            
+            if (areaCodes[country] && areaCodes[country][state]) {
+                const codes = areaCodes[country][state];
+                return codes[Math.floor(Math.random() * codes.length)];
+            }
+            
+            // Default area codes
+            const defaultCodes = {
+                'USA': '555',
+                'Canada': '555',
+                'UK': '020',
+                'Australia': '02',
+                'India': '011'
+            };
+            
+            return defaultCodes[country] || '555';
+        }
+        
+        function generateMockAddress() {
+            const streets = [
+                "Main St", "Oak Ave", "Maple Dr", "Elm St", "Pine Rd", 
+                "Cedar Ln", "Birch Blvd", "Willow Way", "Forest Ave", "Park Rd",
+                "River St", "Lake Dr", "Hill St", "Valley Rd", "Mountain Ave"
+            ];
+            const streetNum = Math.floor(Math.random() * 9999) + 1;
+            const street = streets[Math.floor(Math.random() * streets.length)];
+            return `${streetNum} ${street}, ${currentCity || currentState || 'Local Area'}`;
+        }
+        
+        function displayLocalNumbers(numbers) {
+            const localNumbersGrid = document.getElementById('localNumbersGrid');
+            
+            localNumbersGrid.innerHTML = numbers.map(clinic => `
+                <div class="local-number-card">
+                    <div class="local-number-header">
+                        <h3 class="local-number-name">${clinic.name}</h3>
+                        ${clinic.distance !== 'N/A' ? 
+                            `<span class="local-number-distance">${clinic.distance} miles away</span>` : 
+                            `<span class="local-number-distance">National Service</span>`
+                        }
+                    </div>
+                    
+                    <div class="local-number-details">
+                        <p><i class="fas fa-phone-alt"></i> <strong style="font-size: 1.2rem;">${clinic.phone}</strong></p>
+                        <p><i class="fas fa-map-marker-alt"></i> ${clinic.address}</p>
+                        <p><i class="fas fa-clock"></i> ${clinic.hours}</p>
+                        <p><i class="fas fa-stethoscope"></i> ${clinic.services.join(", ")}</p>
+                        ${clinic.rating ? `<p><i class="fas fa-star"></i> Rating: ${clinic.rating}/5.0</p>` : ''}
+                    </div>
+                    
+                    <div class="local-number-actions">
+                        <button class="contact-btn" style="flex: 1; background: rgba(231, 76, 60, 0.8);" onclick="callNumber('${clinic.phone}')">
+                            <i class="fas fa-phone"></i> Call Emergency
+                        </button>
+                        ${clinic.distance !== 'N/A' ? `
+                            <button class="contact-btn" style="flex: 1;" onclick="getDirections('${clinic.address}')">
+                                <i class="fas fa-directions"></i> Get Directions
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add a button to show default contacts
+            localNumbersGrid.innerHTML += `
+                <div class="local-number-card" style="text-align: center; grid-column: 1 / -1; background: rgba(255, 255, 255, 0.05);">
+                    <h3 class="local-number-name">Emergency Services for ${currentCity || currentState || currentCountry}</h3>
+                    <p>Showing ${numbers.length} emergency services in your area</p>
+                    <p style="margin: 1rem 0; opacity: 0.8; font-size: 0.9rem;">
+                        <i class="fas fa-info-circle"></i> 
+                        Note: These are example numbers for demonstration. In a real emergency, 
+                        always verify local emergency services through official sources.
+                    </p>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 1rem;">
+                        <button class="contact-btn" onclick="showDefaultContacts()">
+                            <i class="fas fa-address-book"></i> Show Default Contacts
+                        </button>
+                        <button class="contact-btn" onclick="updateEmergencyNumbers()">
+                            <i class="fas fa-sync-alt"></i> Refresh Services
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Animate in
+            localEmergencyNumbers.style.opacity = 0;
+            localEmergencyNumbers.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                localEmergencyNumbers.style.opacity = 1;
+                localEmergencyNumbers.style.transform = 'translateY(0)';
+            }, 10);
+        }
+        
+        function updateDefaultEmergencyButton(localNumbers) {
+            // Update the main emergency vet button with the first local number
+            if (localNumbers.length > 0) {
+                const emergencyVetBtn = document.getElementById('emergencyVetBtn');
+                const firstClinic = localNumbers[0];
+                
+                emergencyVetBtn.innerHTML = firstClinic.phone;
+                emergencyVetBtn.href = `tel:${firstClinic.phone}`;
+                
+                // Also update the button text to show it's local
+                emergencyVetBtn.parentElement.querySelector('h3').innerHTML = 
+                    `Local Emergency Vet (${currentCity || currentState || 'Area'})`;
+                emergencyVetBtn.parentElement.querySelector('p').innerHTML = 
+                    `${firstClinic.name} - ${firstClinic.distance} miles away`;
+            }
+        }
+        
+        function showDefaultContacts() {
+            document.getElementById('localEmergencyNumbers').style.display = 'none';
+            document.getElementById('emergencyContacts').style.display = 'grid';
+            document.getElementById('emergencyContacts').scrollIntoView({behavior: 'smooth'});
+        }
+        
+        function callNumber(phone) {
+            if (confirm(`Call emergency number: ${phone}?`)) {
+                window.location.href = `tel:${phone}`;
+            }
+        }
+        
+        function getDirections(address) {
+            if (currentLocation) {
+                // Open Google Maps with directions
+                const encodedAddress = encodeURIComponent(address);
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}&travelmode=driving`, '_blank');
+            } else {
+                alert("Please detect your location first to get directions.");
+            }
+        }
+        
+        function showGuideDetail(guideType) {
+            const guideDetails = {
+                choking: "If your pet is choking, carefully open their mouth and check for visible objects. If you can see and safely reach the object, try to remove it with tweezers. Never push the object further down. If you cannot remove it or your pet collapses, perform pet CPR and get to a vet immediately.",
+                poisoning: "If you suspect poisoning, try to identify what your pet ingested. Do NOT induce vomiting unless instructed by a vet. Call Animal Poison Control immediately at (888) 426-4435. Bring the substance container with you to the vet.",
+                injury: "For injuries, muzzle your pet if possible (unless they're vomiting or having breathing issues). Apply pressure to bleeding wounds with a clean cloth. Support fractures with a makeshift splint. Transport carefully to avoid further injury.",
+                heatstroke: "Move your pet to a cool area immediately. Apply cool (not cold) water to their body, especially head, neck, and groin. Use a fan if available. Offer small amounts of cool water. Get to a vet immediately - heatstroke can cause organ damage.",
+                seizure: "During a seizure, clear the area of objects that could harm your pet. Do NOT put anything in their mouth. Time the seizure. After it ends, keep your pet warm and quiet. Contact your vet immediately, especially if seizures last more than 2-3 minutes or occur in clusters."
+            };
+            
+            alert(`EMERGENCY GUIDE: ${guideType.toUpperCase()}\n\n${guideDetails[guideType]}\n\nIMPORTANT: Always seek professional veterinary care for emergencies.`);
+        }
+        
+        function getAIResponse() {
+            const input = document.getElementById('symptomInput').value.trim();
+            if (!input) {
+                alert("Please describe your pet's symptoms first.");
+                return;
+            }
+            
+            const loading = document.getElementById('loadingIndicator');
+            const placeholder = document.getElementById('responsePlaceholder');
+            const response = document.getElementById('aiResponse');
+            
+            loading.style.display = 'block';
+            placeholder.style.display = 'none';
+            response.style.display = 'none';
+            
+            // Simulate AI response (in a real app, this would call an API)
+            setTimeout(() => {
+                loading.style.display = 'none';
+                
+                const mockResponses = [
+                    `Based on your description, this appears to be an emergency situation. Please:\n\n1. Stay calm and keep your pet calm\n2. Call your nearest emergency vet immediately\n3. Do not attempt home remedies without professional guidance\n\n**IMMEDIATE ACTION REQUIRED:** Contact emergency veterinary services.`,
+                    `Your pet needs professional veterinary attention. Symptoms described may indicate a serious condition.\n\n**Emergency Steps:**\n- Call: (888) 426-4435 (Animal Poison Control) if ingestion is suspected\n- Or contact your local emergency vet\n- Keep your pet warm and comfortable during transport`,
+                    `⚠️ **URGENT VETERINARY CARE NEEDED** ⚠️\n\nBased on the symptoms, please seek immediate veterinary attention. While traveling to the vet:\n- Keep your pet in a safe, confined space\n- Monitor breathing and consciousness\n- Do not offer food or water\n- Keep the environment quiet and calm`
+                ];
+                
+                const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
+                response.innerHTML = `<strong>EMERGENCY ADVICE:</strong><br><br>${randomResponse.replace(/\n/g, '<br>')}`;
+                response.style.display = 'block';
+            }, 2000);
+        }
+        
+        function promptForVetNumber() {
+            const vetNumber = prompt("Enter your veterinarian's phone number:", "+15551234567");
+            if (vetNumber) {
+                alert(`Veterinarian number saved: ${vetNumber}\n\nYou can now call from the contact card.`);
+                localStorage.setItem('vetNumber', vetNumber);
+            }
+        }
+        
+        function findEmergencyClinic() {
+            // Scroll to location detection section
+            document.querySelector('.location-search-section').scrollIntoView({behavior: 'smooth'});
+            // Trigger location detection
+            detectLocation();
+        }
+        
+        // Add CSS for pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(-20px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

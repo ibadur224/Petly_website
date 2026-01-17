@@ -1,0 +1,41 @@
+﻿╔══════════════════════════════════════════╗
+║     HOW TO RUN PETLY - MANUAL STEPS     ║
+╚══════════════════════════════════════════╝
+
+STEP 1: START DATABASE
+─────────────────────
+1. Open XAMPP Control Panel
+2. Click "Start" next to MySQL
+3. Open browser: http://localhost/phpmyadmin
+4. Create database: petly_db
+
+STEP 2: START BACKEND
+─────────────────────
+1. Open PowerShell as Administrator
+2. Run these commands:
+   cd "E:\not your bissnus\Petly\site\back_end"
+   python app.py
+
+STEP 3: ACCESS WEBSITE
+──────────────────────
+• Open browser: http://localhost:5000
+• Sign up new account OR
+• Admin login: admin@petly.com / admin123
+
+STEP 4: STOP EVERYTHING
+───────────────────────
+1. Press Ctrl+C in Flask window
+2. Stop MySQL in XAMPP
+
+TROUBLESHOOTING:
+────────────────
+• Database error? Make sure MySQL is running
+• Port 5000 busy? Use: python app.py --port 5001
+• Python missing? Install Python 3.8+
+
+QUICK TEST:
+───────────
+1. Open: http://localhost:5000/signup
+2. Create account
+3. Login
+4. See profile page = SUCCESS!

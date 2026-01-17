@@ -1,0 +1,5 @@
+{
+  "API_KEY": "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",
+  "API_ENDPOINT": "https://api.openai.com/v1/chat/completions",
+   "model": "mistralai/devstral-2512:free"
+}

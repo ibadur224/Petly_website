@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aging Companion | PetCare AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Cherry Bomb Font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00f7ff;
+            --secondary: #9d4edd;
+            --accent-ai: #00ff88;
+            --accent-warning: #ffaa00;
+            --accent-danger: #ff6b6b;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: #000;
+            color: var(--text-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+            font-family: 'Cherry Bomb One', cursive;
+        }
+
+        /* Cherry Bomb Font Styling */
+        .cherry-bomb-font {
+            font-family: 'Cherry Bomb One', cursive;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        /* Video Background */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                45deg,
+                rgba(9, 0, 59, 0.7) 0%,
+                rgba(157, 78, 221, 0.5) 25%,
+                rgba(0, 247, 255, 0.4) 50%,
+                rgba(0, 255, 136, 0.3) 75%,
+                rgba(255, 170, 0, 0.2) 100%
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -1;
+            mix-blend-mode: overlay;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism Base */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 2.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            font-size: 1.2rem;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .nav-links a.active {
+            background: linear-gradient(90deg, var(--accent-warning), #ff6b6b);
+            color: black;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            background: linear-gradient(90deg, #ffaa00, #ff6b6b, #9d4edd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.8rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 170, 0, 0.15);
+            color: var(--accent-warning);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            border: 1px solid rgba(255, 170, 0, 0.3);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-card {
+            padding: 2rem;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: rgba(255, 170, 0, 0.1);
+            color: var(--accent-warning);
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+        }
+
+        .card-content {
+            flex-grow: 1;
+        }
+
+        .card-content p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Health Metrics */
+        .health-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 1.2rem;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-value {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            height: 250px;
+            margin-top: 1.5rem;
+            position: relative;
+        }
+
+        /* Symptom Checker */
+        .symptom-checker {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .symptom-item {
+            padding: 1.2rem;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .symptom-item:hover {
+            background: rgba(255, 170, 0, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .symptom-item.selected {
+            background: rgba(255, 107, 107, 0.2);
+            border-color: var(--accent-danger);
+        }
+
+        .symptom-name {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .symptom-severity {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Analysis Section */
+        .analysis-section {
+            margin-top: 3rem;
+        }
+
+        .analysis-result {
+            padding: 2rem;
+            margin-top: 1rem;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(157, 78, 221, 0.1));
+            border: 1px solid rgba(255, 170, 0, 0.3);
+            display: none;
+        }
+
+        .analysis-result.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            color: var(--accent-warning);
+        }
+
+        .result-confidence {
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--accent-ai);
+            font-size: 1.1rem;
+        }
+
+        .result-content {
+            line-height: 1.6;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-content ul {
+            padding-left: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .result-content li {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--accent-warning), #ff6b6b);
+            color: black;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #ffbb33, #ff3366);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 170, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Care Plan */
+        .care-plan-items {
+            margin-top: 1.5rem;
+        }
+
+        .care-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 5px solid var(--accent-warning);
+        }
+
+        .care-item i {
+            color: var(--accent-warning);
+            font-size: 1.5rem;
+        }
+
+        .care-item strong {
+            font-size: 1.3rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .care-item p {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent-warning);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Report Modal */
+        .report-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .report-modal.show {
+            display: flex;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .report-content {
+            background: #000;
+            border: 2px solid var(--accent-warning);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--accent-warning);
+        }
+
+        .report-header h2 {
+            font-size: 2.5rem;
+            color: var(--accent-warning);
+            margin-bottom: 0.5rem;
+        }
+
+        .report-body {
+            font-size: 1.1rem;
+        }
+
+        .report-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+
+        .report-section h3 {
+            color: var(--accent-warning);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .close-report {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--accent-warning);
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-report:hover {
+            background: rgba(255, 170, 0, 0.1);
+        }
+
+        /* Cognitive Test Interface */
+        .cognitive-test {
+            display: none;
+            padding: 2rem;
+            border-radius: 15px;
+            background: rgba(0, 247, 255, 0.1);
+            border: 2px solid var(--primary);
+            margin-top: 1rem;
+        }
+
+        .cognitive-test.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .test-question {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .test-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .test-option {
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .test-option:hover {
+            background: rgba(0, 247, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .test-option.selected {
+            background: rgba(0, 247, 255, 0.3);
+            border: 2px solid var(--primary);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 2rem !important;
+        }
+
+        .model-ref {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 170, 0, 0.1);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 170, 0, 0.3);
+            font-size: 1.2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero h1 { font-size: 3rem; }
+            .hero-subtitle { font-size: 1.5rem; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .card-title { font-size: 1.6rem; }
+            .metric-value { font-size: 2.5rem; }
+        }
+
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 1.5rem; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero-subtitle { font-size: 1.3rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; }
+            .symptom-checker { grid-template-columns: 1fr; }
+            .result-actions { flex-direction: column; }
+            .result-title { font-size: 1.5rem; }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2rem; }
+            .hero-subtitle { font-size: 1.1rem; }
+            .dashboard-card { padding: 1.5rem; }
+            .metric-value { font-size: 2rem; }
+            .ai-badge { font-size: 1.1rem; padding: 0.6rem 1.5rem; }
+            .logo { font-size: 1.6rem; }
+            .nav-links a { font-size: 1rem; padding: 0.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="../resourses/well_vid.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="gradient-overlay"></div>
+
+    <!-- Header -->
+    <header>
+        <nav class="navbar glass">
+            <div class="logo cherry-bomb-font">
+                <i class="fas fa-paw"></i>
+                <span>PETCARE AI</span>
+            </div>
+            <ul class="nav-links cherry-bomb-font">
+                <li><a href="tech_tools_hub.html">TOOLS HUB</a></li>
+                <li><a href="#" class="active">AGING COMPANION</a></li>
+                <li><a href="#">WELLNESS</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 class="cherry-bomb-font">AGING COMPANION</h1>
+        <p class="hero-subtitle cherry-bomb-font">AI-POWERED MONITORING AND CARE FOR YOUR SENIOR PET</p>
+        <div class="ai-badge cherry-bomb-font">
+            <i class="fas fa-brain"></i>
+            <span>LIVE AI MONITORING ACTIVE</span>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Dashboard -->
+        <div class="dashboard-grid">
+            <!-- Mobility Tracking -->
+            <div class="dashboard-card glass">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-walking"></i>
+                    </div>
+                    <h2 class="card-title cherry-bomb-font">MOBILITY TRACKING</h2>
+                </div>
+                <div class="card-content">
+                    <p class="cherry-bomb-font">MONITOR YOUR PET'S MOVEMENT PATTERNS AND DETECT CHANGES IN MOBILITY</p>
+                    <div class="health-metrics">
+                        <div class="metric">
+                            <div class="metric-value cherry-bomb-font" id="dailySteps">1,234</div>
+                            <div class="metric-label cherry-bomb-font">DAILY STEPS</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value cherry-bomb-font" id="mobilityScore">82%</div>
+                            <div class="metric-label cherry-bomb-font">MOBILITY SCORE</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value cherry-bomb-font" id="stiffnessLevel">LOW</div>
+                            <div class="metric-label cherry-bomb-font">STIFFNESS LEVEL</div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="mobilityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pain Detection -->
+            <div class="dashboard-card glass">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h2 class="card-title cherry-bomb-font">PAIN DETECTION</h2>
+                </div>
+                <div class="card-content">
+                    <p class="cherry-bomb-font">AI ANALYSIS OF PAIN INDICATORS AND DISCOMFORT SYMPTOMS</p>
+                    <div class="symptom-checker" id="symptomList">
+                        <!-- Symptoms will be populated by JavaScript -->
+                    </div>
+                    <button class="btn btn-primary cherry-bomb-font" id="analyzeSymptoms" style="margin-top: 1rem; width: 100%;">
+                        <i class="fas fa-search"></i> ANALYZE SYMPTOMS
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cognitive Assessment -->
+            <div class="dashboard-card glass">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h2 class="card-title cherry-bomb-font">COGNITIVE ASSESSMENT</h2>
+                </div>
+                <div class="card-content">
+                    <p class="cherry-bomb-font">TRACK MEMORY, AWARENESS, AND COGNITIVE FUNCTION CHANGES</p>
+                    <div class="health-metrics">
+                        <div class="metric">
+                            <div class="metric-value cherry-bomb-font" id="cognitiveScore">78%</div>
+                            <div class="metric-label cherry-bomb-font">COGNITIVE SCORE</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value cherry-bomb-font" id="memoryTest">GOOD</div>
+                            <div class="metric-label cherry-bomb-font">MEMORY TEST</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value cherry-bomb-font" id="disorientation">LOW</div>
+                            <div class="metric-label cherry-bomb-font">DISORIENTATION</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary cherry-bomb-font" id="runCognitiveTest" style="margin-top: 1rem; width: 100%;">
+                        <i class="fas fa-play-circle"></i> RUN COGNITIVE TEST
+                    </button>
+                    <div class="cognitive-test" id="cognitiveTest">
+                        <div class="test-question cherry-bomb-font" id="testQuestion">QUESTION WILL APPEAR HERE</div>
+                        <div class="test-options" id="testOptions">
+                            <!-- Options will be populated by JavaScript -->
+                        </div>
+                        <button class="btn btn-secondary cherry-bomb-font" id="nextQuestion" style="width: 100%;">
+                            <i class="fas fa-arrow-right"></i> NEXT QUESTION
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Care Planning -->
+            <div class="dashboard-card glass">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h2 class="card-title cherry-bomb-font">CARE PLAN</h2>
+                </div>
+                <div class="card-content">
+                    <p class="cherry-bomb-font">PERSONALIZED CARE SCHEDULE FOR YOUR SENIOR PET'S NEEDS</p>
+                    <div class="care-plan-items">
+                        <div class="care-item">
+                            <i class="fas fa-pills"></i>
+                            <div>
+                                <strong class="cherry-bomb-font">MORNING MEDICATION</strong>
+                                <p class="cherry-bomb-font">8:00 AM - JOINT SUPPLEMENTS</p>
+                            </div>
+                        </div>
+                        <div class="care-item">
+                            <i class="fas fa-walking"></i>
+                            <div>
+                                <strong class="cherry-bomb-font">GENTLE EXERCISE</strong>
+                                <p class="cherry-bomb-font">10:00 AM - 15 MINUTE WALK</p>
+                            </div>
+                        </div>
+                        <div class="care-item">
+                            <i class="fas fa-heart"></i>
+                            <div>
+                                <strong class="cherry-bomb-font">HEALTH CHECK</strong>
+                                <p class="cherry-bomb-font">2:00 PM - MONITOR BREATHING</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary cherry-bomb-font" style="margin-top: 1rem; width: 100%;" id="editCarePlan">
+                        <i class="fas fa-edit"></i> EDIT CARE PLAN
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Analysis Section -->
+        <div class="analysis-section">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p class="cherry-bomb-font">AI IS ANALYZING YOUR PET'S SYMPTOMS...</p>
+            </div>
+
+            <div class="analysis-result glass" id="analysisResult">
+                <div class="result-header">
+                    <h3 class="result-title cherry-bomb-font">AI ANALYSIS RESULTS</h3>
+                    <div class="result-confidence cherry-bomb-font">92% CONFIDENCE</div>
+                </div>
+                <div class="result-content" id="resultContent">
+                    <!-- Analysis content will be inserted here -->
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-primary cherry-bomb-font" id="generateReport">
+                        <i class="fas fa-file-medical"></i> GENERATE HEALTH REPORT
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Report Modal -->
+    <div class="report-modal" id="reportModal">
+        <div class="report-content glass">
+            <button class="close-report cherry-bomb-font" id="closeReport">&times;</button>
+            <div class="report-header">
+                <h2 class="cherry-bomb-font">SENIOR PET HEALTH REPORT</h2>
+                <p class="cherry-bomb-font">GENERATED ON: <span id="reportDate"></span></p>
+            </div>
+            <div class="report-body" id="reportBody">
+                <!-- Report content will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content glass">
+            <div class="model-ref cherry-bomb-font">
+                <i class="fas fa-microchip"></i>
+                <span>AI MONITORING ACTIVE</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Load API configuration
+        let apiConfig = {
+            API_KEY: "",
+            API_ENDPOINT: "https://api.openai.com/v1/chat/completions",
+            model: "mistralai/devstral-2512:free"
+        };
+
+        // Try to load from api_well.json
+        async function loadApiConfig() {
+            try {
+                const response = await fetch('../api_well.json');
+                const config = await response.json();
+                apiConfig = { ...apiConfig, ...config };
+                console.log('API configuration loaded successfully');
+            } catch (error) {
+                console.warn('Could not load api_well.json, using default configuration');
+            }
+        }
+
+        // Symptoms data
+        const symptoms = [
+            { id: 1, name: "LIMPING", severity: "MODERATE", selected: false },
+            { id: 2, name: "DIFFICULTY RISING", severity: "HIGH", selected: false },
+            { id: 3, name: "STIFFNESS", severity: "LOW", selected: false },
+            { id: 4, name: "RELUCTANCE TO JUMP", severity: "MODERATE", selected: false },
+            { id: 5, name: "WHINING/VOCALIZING", severity: "HIGH", selected: false },
+            { id: 6, name: "DECREASED ACTIVITY", severity: "MODERATE", selected: false },
+            { id: 7, name: "APPETITE CHANGES", severity: "LOW", selected: false },
+            { id: 8, name: "SLEEP PATTERN CHANGES", severity: "MODERATE", selected: false }
+        ];
+
+        // Cognitive test questions
+        const cognitiveTest = [
+            {
+                question: "DOES YOUR PET RECOGNIZE FAMILIAR PEOPLE?",
+                options: ["ALWAYS", "SOMETIMES", "RARELY", "NEVER"],
+                correct: 0
+            },
+            {
+                question: "HOW OFTEN DOES YOUR PET GET LOST IN FAMILIAR PLACES?",
+                options: ["NEVER", "OCCASIONALLY", "OFTEN", "ALWAYS"],
+                correct: 0
+            },
+            {
+                question: "DOES YOUR PET RESPOND TO THEIR NAME?",
+                options: ["IMMEDIATELY", "AFTER REPEATING", "SOMETIMES", "NEVER"],
+                correct: 0
+            },
+            {
+                question: "HOW IS YOUR PET'S SLEEP-WAKE CYCLE?",
+                options: ["NORMAL", "SLIGHTLY DISRUPTED", "OFTEN REVERSED", "COMPLETELY REVERSED"],
+                correct: 0
+            }
+        ];
+
+        // Selected symptoms and test answers
+        let selectedSymptoms = [];
+        let testAnswers = [];
+        let currentQuestion = 0;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadApiConfig();
+            initializeCharts();
+            renderSymptoms();
+            setupEventListeners();
+            
+            // Fade in animation
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                document.body.style.transition = 'opacity 1s';
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Initialize Charts
+        function initializeCharts() {
+            // Mobility Chart
+            const mobilityCtx = document.getElementById('mobilityChart').getContext('2d');
+            new Chart(mobilityCtx, {
+                type: 'line',
+                data: {
+                    labels: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+                    datasets: [{
+                        label: 'MOBILITY SCORE',
+                        data: [85, 82, 80, 78, 82, 81, 79],
+                        borderColor: '#ffaa00',
+                        backgroundColor: 'rgba(255, 170, 0, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 70,
+                            max: 100,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { 
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    family: "'Cherry Bomb One', cursive",
+                                    size: 14
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { 
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    family: "'Cherry Bomb One', cursive",
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Render symptoms list
+        function renderSymptoms() {
+            const container = document.getElementById('symptomList');
+            container.innerHTML = symptoms.map(symptom => `
+                <div class="symptom-item ${symptom.selected ? 'selected' : ''}" 
+                     data-id="${symptom.id}">
+                    <div class="symptom-name cherry-bomb-font">${symptom.name}</div>
+                    <div class="symptom-severity cherry-bomb-font">SEVERITY: ${symptom.severity}</div>
+                </div>
+            `).join('');
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Symptom selection
+            document.getElementById('symptomList').addEventListener('click', (e) => {
+                const symptomItem = e.target.closest('.symptom-item');
+                if (!symptomItem) return;
+                
+                const id = parseInt(symptomItem.dataset.id);
+                const symptom = symptoms.find(s => s.id === id);
+                
+                if (symptom) {
+                    symptom.selected = !symptom.selected;
+                    symptomItem.classList.toggle('selected');
+                    
+                    if (symptom.selected) {
+                        selectedSymptoms.push(symptom);
+                    } else {
+                        selectedSymptoms = selectedSymptoms.filter(s => s.id !== id);
+                    }
+                }
+            });
+
+            // Analyze symptoms button
+            document.getElementById('analyzeSymptoms').addEventListener('click', analyzeSymptoms);
+
+            // Generate report button
+            document.getElementById('generateReport').addEventListener('click', generateReport);
+
+            // Close report modal
+            document.getElementById('closeReport').addEventListener('click', () => {
+                document.getElementById('reportModal').classList.remove('show');
+            });
+
+            // Run cognitive test
+            document.getElementById('runCognitiveTest').addEventListener('click', startCognitiveTest);
+
+            // Next question button
+            document.getElementById('nextQuestion').addEventListener('click', nextQuestion);
+
+            // Edit care plan
+            document.getElementById('editCarePlan').addEventListener('click', editCarePlan);
+        }
+
+        // Analyze symptoms with AI
+        async function analyzeSymptoms() {
+            if (selectedSymptoms.length === 0) {
+                alert('PLEASE SELECT AT LEAST ONE SYMPTOM TO ANALYZE');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('analysisResult');
+            const content = document.getElementById('resultContent');
+
+            loading.classList.add('show');
+            result.classList.remove('show');
+
+            // Simulate API call
+            setTimeout(async () => {
+                try {
+                    const analysis = await callAIForAnalysis(selectedSymptoms);
+                    content.innerHTML = analysis;
+                    result.classList.add('show');
+                } catch (error) {
+                    content.innerHTML = `
+                        <p class="cherry-bomb-font"><strong>ANALYSIS ERROR:</strong> ${error.message}</p>
+                        <p class="cherry-bomb-font">HERE'S A GENERAL ASSESSMENT BASED ON SELECTED SYMPTOMS:</p>
+                        <ul>
+                            <li class="cherry-bomb-font">YOUR PET SHOWS ${selectedSymptoms.length} PAIN INDICATORS</li>
+                            <li class="cherry-bomb-font">CONSIDER CONSULTING A VETERINARIAN FOR ARTHRITIS EVALUATION</li>
+                            <li class="cherry-bomb-font">MONITOR MOBILITY CHANGES OVER THE NEXT WEEK</li>
+                        </ul>
+                    `;
+                    result.classList.add('show');
+                }
+                loading.classList.remove('show');
+            }, 2000);
+        }
+
+        // Simulated API call to AI
+        async function callAIForAnalysis(symptoms) {
+            // If API key is available, make real API call
+            if (apiConfig.API_KEY && apiConfig.API_KEY !== "here my api key") {
+                try {
+                    const symptomText = symptoms.map(s => `${s.name} (${s.severity} severity)`).join(', ');
+                    const prompt = `As a veterinary AI assistant, analyze these symptoms in a senior pet: ${symptomText}. 
+                    Provide a concise analysis including:
+                    1. Likely conditions (prioritize common age-related issues)
+                    2. Recommended immediate actions
+                    3. When to seek veterinary care
+                    4. Home care suggestions
+                    
+                    Format the response in HTML with paragraphs and bullet points.`;
+
+                    const response = await fetch(apiConfig.API_ENDPOINT, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiConfig.API_KEY}`
+                        },
+                        body: JSON.stringify({
+                            model: apiConfig.model,
+                            messages: [
+                                { role: "system", content: "You are a veterinary AI assistant specializing in senior pet care." },
+                                { role: "user", content: prompt }
+                            ],
+                            temperature: 0.7,
+                            max_tokens: 500
+                        })
+                    });
+
+                    const data = await response.json();
+                    return data.choices[0].message.content;
+                } catch (error) {
+                    console.error('API Error:', error);
+                    throw new Error('Failed to connect to AI service');
+                }
+            } else {
+                // Fallback to simulated response
+                return simulateAIResponse(symptoms);
+            }
+        }
+
+        // Simulated AI response
+        function simulateAIResponse(symptoms) {
+            const severityCount = {
+                High: symptoms.filter(s => s.severity === 'HIGH').length,
+                Moderate: symptoms.filter(s => s.severity === 'MODERATE').length,
+                Low: symptoms.filter(s => s.severity === 'LOW').length
+            };
+
+            return `
+                <p class="cherry-bomb-font"><strong>AI ANALYSIS COMPLETE</strong></p>
+                <p class="cherry-bomb-font">BASED ON ${symptoms.length} SELECTED SYMPTOMS, YOUR SENIOR PET MAY BE EXPERIENCING AGE-RELATED DISCOMFORT.</p>
+                
+                <p class="cherry-bomb-font"><strong>LIKELY CONDITIONS:</strong></p>
+                <ul>
+                    <li class="cherry-bomb-font">OSTEOARTHRITIS (COMMON IN SENIOR PETS)</li>
+                    <li class="cherry-bomb-font">MUSCLE STIFFNESS</li>
+                    <li class="cherry-bomb-font">POSSIBLE JOINT INFLAMMATION</li>
+                </ul>
+                
+                <p class="cherry-bomb-font"><strong>IMMEDIATE ACTIONS:</strong></p>
+                <ul>
+                    <li class="cherry-bomb-font">PROVIDE SOFT, PADDED RESTING AREAS</li>
+                    <li class="cherry-bomb-font">CONSIDER JOINT SUPPLEMENTS (GLUCOSAMINE/CHONDROITIN)</li>
+                    <li class="cherry-bomb-font">GENTLE MASSAGE AROUND STIFF AREAS</li>
+                    ${severityCount.High > 0 ? '<li class="cherry-bomb-font"><strong>SCHEDULE VETERINARY CONSULTATION THIS WEEK</strong></li>' : ''}
+                </ul>
+                
+                <p class="cherry-bomb-font"><strong>MONITOR CLOSELY:</strong></p>
+                <ul>
+                    <li class="cherry-bomb-font">APPETITE AND WATER INTAKE</li>
+                    <li class="cherry-bomb-font">CHANGES IN MOBILITY PATTERNS</li>
+                    <li class="cherry-bomb-font">VOCALIZATION WHEN MOVING</li>
+                </ul>
+                
+                <p class="cherry-bomb-font"><em>THIS ANALYSIS IS 92% CONFIDENT BASED ON SYMPTOM PATTERNS. ALWAYS CONSULT WITH YOUR VETERINARIAN FOR DIAGNOSIS.</em></p>
+            `;
+        }
+
+        // Generate Health Report
+        function generateReport() {
+            const modal = document.getElementById('reportModal');
+            const reportBody = document.getElementById('reportBody');
+            const reportDate = document.getElementById('reportDate');
+            
+            // Set current date
+            const now = new Date();
+            reportDate.textContent = now.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Generate report content
+            const reportContent = `
+                <div class="report-section">
+                    <h3 class="cherry-bomb-font">EXECUTIVE SUMMARY</h3>
+                    <p class="cherry-bomb-font">COMPREHENSIVE HEALTH ANALYSIS FOR SENIOR PET COMPLETED ON ${now.toLocaleDateString().toUpperCase()}</p>
+                    <p class="cherry-bomb-font">OVERALL HEALTH STATUS: <strong>STABLE</strong></p>
+                </div>
+                
+                <div class="report-section">
+                    <h3 class="cherry-bomb-font">VITAL METRICS</h3>
+                    <div class="health-metrics">
+                        <div class="metric">
+                            <div class="metric-value cherry-bomb-font">${document.getElementById('mobilityScore').textContent}</div>
+                            <div class="metric-label cherry-bomb-font">MOBILITY SCORE</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value cherry-bomb-font">${document.getElementById('cognitiveScore').textContent}</div>
+                            <div class="metric-label cherry-bomb-font">COGNITIVE SCORE</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value cherry-bomb-font">${document.getElementById('dailySteps').textContent}</div>
+                            <div class="metric-label cherry-bomb-font">DAILY STEPS</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <h3 class="cherry-bomb-font">SYMPTOM ANALYSIS</h3>
+                    <p class="cherry-bomb-font">DETECTED SYMPTOMS: <strong>${selectedSymptoms.length}</strong></p>
+                    <ul>
+                        ${selectedSymptoms.map(s => `<li class="cherry-bomb-font">${s.name} - ${s.severity} SEVERITY</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="report-section">
+                    <h3 class="cherry-bomb-font">RECOMMENDATIONS</h3>
+                    <ul>
+                        <li class="cherry-bomb-font">CONTINUE REGULAR MOBILITY MONITORING</li>
+                        <li class="cherry-bomb-font">MAINTAIN CURRENT CARE PLAN SCHEDULE</li>
+                        <li class="cherry-bomb-font">SCHEDULE VETERINARY CHECK-UP IN 2 WEEKS</li>
+                        <li class="cherry-bomb-font">MONITOR COGNITIVE FUNCTION WEEKLY</li>
+                    </ul>
+                </div>
+                
+                <div class="report-section">
+                    <h3 class="cherry-bomb-font">NEXT STEPS</h3>
+                    <p class="cherry-bomb-font">1. REVIEW AND UPDATE CARE PLAN AS NEEDED</p>
+                    <p class="cherry-bomb-font">2. CONTINUE DAILY MOBILITY TRACKING</p>
+                    <p class="cherry-bomb-font">3. SCHEDULE NEXT COGNITIVE ASSESSMENT</p>
+                </div>
+            `;
+            
+            reportBody.innerHTML = reportContent;
+            modal.classList.add('show');
+        }
+
+        // Start Cognitive Test
+        function startCognitiveTest() {
+            currentQuestion = 0;
+            testAnswers = [];
+            document.getElementById('cognitiveTest').classList.add('show');
+            loadQuestion(currentQuestion);
+        }
+
+        // Load cognitive test question
+        function loadQuestion(index) {
+            if (index >= cognitiveTest.length) {
+                completeCognitiveTest();
+                return;
+            }
+
+            const question = cognitiveTest[index];
+            const questionElement = document.getElementById('testQuestion');
+            const optionsElement = document.getElementById('testOptions');
+
+            questionElement.textContent = question.question;
+            
+            optionsElement.innerHTML = question.options.map((option, i) => `
+                <div class="test-option cherry-bomb-font" data-index="${i}">
+                    ${option}
+                </div>
+            `).join('');
+
+            // Add click listeners to options
+            optionsElement.querySelectorAll('.test-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove previous selection
+                    optionsElement.querySelectorAll('.test-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Select current option
+                    this.classList.add('selected');
+                    testAnswers[currentQuestion] = parseInt(this.dataset.index);
+                });
+            });
+        }
+
+        // Next question handler
+        function nextQuestion() {
+            if (testAnswers[currentQuestion] === undefined) {
+                alert('PLEASE SELECT AN ANSWER');
+                return;
+            }
+            
+            currentQuestion++;
+            if (currentQuestion < cognitiveTest.length) {
+                loadQuestion(currentQuestion);
+            } else {
+                completeCognitiveTest();
+            }
+        }
+
+        // Complete cognitive test
+        function completeCognitiveTest() {
+            // Calculate score
+            const correctAnswers = testAnswers.filter((answer, index) => answer === cognitiveTest[index].correct).length;
+            const score = Math.round((correctAnswers / cognitiveTest.length) * 100);
+            
+            // Update cognitive score display
+            document.getElementById('cognitiveScore').textContent = `${score}%`;
+            document.getElementById('memoryTest').textContent = score > 70 ? 'EXCELLENT' : score > 50 ? 'GOOD' : 'NEEDS ATTENTION';
+            
+            // Hide test interface
+            document.getElementById('cognitiveTest').classList.remove('show');
+            
+            // Show result
+            alert(`COGNITIVE TEST COMPLETE!\nSCORE: ${score}%\n${score > 70 ? 'EXCELLENT COGNITIVE FUNCTION' : score > 50 ? 'GOOD COGNITIVE FUNCTION' : 'RECOMMEND FURTHER EVALUATION'}`);
+        }
+
+        // Edit care plan
+        function editCarePlan() {
+            alert('CARE PLAN EDITOR WOULD OPEN HERE\n\nTHIS FEATURE WOULD ALLOW:\n- ADDING/REMOVING MEDICATIONS\n- ADJUSTING EXERCISE SCHEDULES\n- SETTING REMINDERS\n- TRACKING VET APPOINTMENTS');
+        }
+
+        // Update health metrics randomly (simulation)
+        function updateHealthMetrics() {
+            const dailySteps = Math.floor(Math.random() * 500) + 1000;
+            const mobilityScore = Math.floor(Math.random() * 10) + 75;
+            const cognitiveScore = Math.floor(Math.random() * 10) + 70;
+            
+            document.getElementById('dailySteps').textContent = dailySteps.toLocaleString();
+            document.getElementById('mobilityScore').textContent = `${mobilityScore}%`;
+            document.getElementById('cognitiveScore').textContent = `${cognitiveScore}%`;
+        }
+
+        // Simulate periodic updates
+        setInterval(updateHealthMetrics, 10000);
+    </script>
+</body>
+</html>
